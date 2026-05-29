@@ -1,106 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NWM Studio Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root{
-    --bg:#f3efe6;
-    --surface:#fbf9f3;
-    --surface-2:#f7f3ea;
-    --ink:#1d1b17;
-    --muted:#7c7568;
-    --faint:#a59d8f;
-    --line:#e4ddcd;
-    --line-strong:#d6cdb8;
-    --accent:#c2502f;
-    --accent-soft:#f1d9cf;
-    --done:#4a7c59;
-    --done-soft:#dcebe0;
-    --radius:14px;
-    --shadow:0 1px 2px rgba(29,27,23,.04),0 8px 28px rgba(29,27,23,.06);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--bg);color:var(--ink);font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-  body{padding:28px 20px 60px;min-height:100vh}
-  .wrap{max-width:760px;margin:0 auto}
+:root{
+  --bg:#f3efe6;
+  --surface:#fbf9f3;
+  --surface-2:#f7f3ea;
+  --ink:#1d1b17;
+  --muted:#7c7568;
+  --faint:#a59d8f;
+  --line:#e4ddcd;
+  --line-strong:#d6cdb8;
+  --accent:#c2502f;
+  --accent-soft:#f1d9cf;
+  --done:#4a7c59;
+  --done-soft:#dcebe0;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(29,27,23,.04),0 8px 28px rgba(29,27,23,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}
 
-  /* Header */
-  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
-  .title h1{font-family:"Fraunces",serif;font-weight:600;font-size:34px;letter-spacing:-.01em;line-height:1}
-  .title p{color:var(--muted);font-size:14px;margin-top:7px}
-  .overall{text-align:right;min-width:120px}
-  .overall .pct{font-family:"Fraunces",serif;font-size:30px;font-weight:600;line-height:1}
-  .overall .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin-top:4px}
+/* NAV */
+.nav{display:flex;align-items:center;gap:0;background:var(--surface);border-bottom:1px solid var(--line);padding:0 28px;position:sticky;top:0;z-index:100}
+.nav-brand{font-family:"Fraunces",serif;font-size:18px;font-weight:600;margin-right:32px;padding:18px 0;letter-spacing:-.01em}
+.nav-tab{font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:18px 16px;cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.nav-tab:hover{color:var(--ink)}
+.nav-tab.active{color:var(--ink);border-bottom-color:var(--accent)}
 
-  /* Site tabs */
-  .sites{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
-  .tab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
-    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;
-    display:flex;align-items:center;gap:8px;transition:all .15s ease;font-family:inherit}
-  .tab:hover{border-color:var(--accent);color:var(--ink)}
-  .tab.active{background:var(--ink);border-color:var(--ink);color:#fbf9f3}
-  .tab .ring{width:16px;height:16px;border-radius:50%;flex:none;
-    background:conic-gradient(var(--done) calc(var(--p,0)*1%), rgba(255,255,255,.18) 0)}
-  .tab.active .ring{background:conic-gradient(#fff calc(var(--p,0)*1%), rgba(255,255,255,.22) 0)}
-  .tab.add{background:transparent;border-style:dashed;color:var(--accent);font-weight:600}
-  .tab.add:hover{background:var(--accent-soft)}
+/* PAGE */
+.page{display:none;padding:32px 28px 80px;max-width:900px;margin:0 auto}
+.page.active{display:block}
 
-  /* Overall progress bar */
-  .bar{height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin-bottom:30px}
-  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--done),#5e9670);
-    border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+/* ── CHECKLIST styles ── */
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.title h1{font-family:"Fraunces",serif;font-weight:600;font-size:34px;letter-spacing:-.01em;line-height:1}
+.title p{color:var(--muted);font-size:14px;margin-top:7px}
+.overall{text-align:right;min-width:120px}
+.overall .pct{font-family:"Fraunces",serif;font-size:30px;font-weight:600;line-height:1}
+.overall .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin-top:4px}
+.sites{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.tab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s ease;font-family:inherit}
+.tab:hover{border-color:var(--accent);color:var(--ink)}
+.tab.active{background:var(--ink);border-color:var(--ink);color:#fbf9f3}
+.tab .ring{width:16px;height:16px;border-radius:50%;flex:none;background:conic-gradient(var(--done) calc(var(--p,0)*1%), rgba(255,255,255,.18) 0)}
+.tab.active .ring{background:conic-gradient(#fff calc(var(--p,0)*1%), rgba(255,255,255,.22) 0)}
+.tab.add{background:transparent;border-style:dashed;color:var(--accent);font-weight:600}
+.tab.add:hover{background:var(--accent-soft)}
+.bar{height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin-bottom:30px}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--done),#5e9670);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.phase-head{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+.phase-head .name{font-family:"Fraunces",serif;font-size:18px;font-weight:600;flex:1;letter-spacing:-.01em}
+.phase-head .count{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:3px 9px;border-radius:99px;font-variant-numeric:tabular-nums}
+.phase-head .count.full{background:var(--done-soft);border-color:#bcd9c4;color:#356046}
+.chev{width:18px;height:18px;color:var(--faint);transition:transform .2s ease}
+.phase.collapsed .chev{transform:rotate(-90deg)}
+.phase.collapsed .items{display:none}
+.pminibar{height:3px;background:var(--surface-2)}
+.pminibar>i{display:block;height:100%;width:0;background:var(--done);transition:width .45s ease}
+.items{padding:6px 8px 12px}
+.item{display:flex;align-items:center;gap:13px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .12s}
+.item:hover{background:var(--surface-2)}
+.box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-strong);flex:none;display:grid;place-items:center;transition:all .18s ease;background:#fff}
+.box svg{width:13px;height:13px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .22s ease .03s}
+.item.done .box{background:var(--done);border-color:var(--done)}
+.item.done .box svg{stroke-dashoffset:0}
+.item.pop .box{animation:pop .28s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
+.item .txt{font-size:14.5px;line-height:1.35;transition:color .15s}
+.item.done .txt{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+.empty{text-align:center;padding:70px 20px;color:var(--muted)}
+.empty h2{font-family:"Fraunces",serif;font-size:22px;color:var(--ink);font-weight:600;margin-bottom:8px}
+.empty p{font-size:14px;margin-bottom:20px}
+.btn{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:11px 20px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fbf9f3;transition:opacity .15s}
+.btn:hover{opacity:.88}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+.link{background:none;border:none;font-family:inherit;font-size:13px;color:var(--faint);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--accent)}
+.saved{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
+.saved .dot{width:7px;height:7px;border-radius:50%;background:var(--done)}
 
-  /* Phase */
-  .phase{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
-  .phase-head{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
-  .phase-head .name{font-family:"Fraunces",serif;font-size:18px;font-weight:600;flex:1;letter-spacing:-.01em}
-  .phase-head .count{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);
-    border:1px solid var(--line);padding:3px 9px;border-radius:99px;font-variant-numeric:tabular-nums}
-  .phase-head .count.full{background:var(--done-soft);border-color:#bcd9c4;color:#356046}
-  .chev{width:18px;height:18px;color:var(--faint);transition:transform .2s ease}
-  .phase.collapsed .chev{transform:rotate(-90deg)}
-  .phase.collapsed .items{display:none}
-  .pminibar{height:3px;background:var(--surface-2)}
-  .pminibar > i{display:block;height:100%;width:0;background:var(--done);transition:width .45s ease}
+/* ── PROJECT TRACKER styles ── */
+.pt-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.pt-header h1{font-family:"Fraunces",serif;font-weight:600;font-size:34px;letter-spacing:-.01em}
+.pt-header p{color:var(--muted);font-size:14px;margin-top:7px}
+.pt-add-btn{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff;transition:opacity .15s;white-space:nowrap}
+.pt-add-btn:hover{opacity:.88}
 
-  .items{padding:6px 8px 12px}
-  .item{display:flex;align-items:center;gap:13px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .12s}
-  .item:hover{background:var(--surface-2)}
-  .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-strong);flex:none;
-    display:grid;place-items:center;transition:all .18s ease;background:#fff}
-  .box svg{width:13px;height:13px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
-    stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .22s ease .03s}
-  .item.done .box{background:var(--done);border-color:var(--done);transform:scale(1)}
-  .item.done .box svg{stroke-dashoffset:0}
-  .item.pop .box{animation:pop .28s ease}
-  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
-  .item .txt{font-size:14.5px;line-height:1.35;transition:color .15s}
-  .item.done .txt{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+/* stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.stat-card .s-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px}
+.stat-card .s-val{font-family:"Fraunces",serif;font-size:26px;font-weight:600;line-height:1}
+.stat-card .s-sub{font-size:12px;color:var(--muted);margin-top:4px}
 
-  /* Empty state */
-  .empty{text-align:center;padding:70px 20px;color:var(--muted)}
-  .empty h2{font-family:"Fraunces",serif;font-size:22px;color:var(--ink);font-weight:600;margin-bottom:8px}
-  .empty p{font-size:14px;margin-bottom:20px}
-  .btn{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:11px 20px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fbf9f3;transition:opacity .15s}
-  .btn:hover{opacity:.88}
-  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
-  .link{background:none;border:none;font-family:inherit;font-size:13px;color:var(--faint);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-  .link:hover{color:var(--accent)}
-  .saved{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
-  .saved .dot{width:7px;height:7px;border-radius:50%;background:var(--done)}
-  .loading{text-align:center;padding:60px;color:var(--muted);font-size:14px}
+/* charts row */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+@media(max-width:600px){.charts-row{grid-template-columns:1fr}}
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.chart-card h3{font-family:"Fraunces",serif;font-size:16px;font-weight:600;margin-bottom:16px}
+.chart-wrap{position:relative;width:100%;height:220px}
+
+/* year filter */
+.year-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.year-row span{font-size:13px;color:var(--muted);font-weight:600}
+.ybtn{font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer;transition:all .15s}
+.ybtn:hover{border-color:var(--accent);color:var(--ink)}
+.ybtn.active{background:var(--ink);border-color:var(--ink);color:#fbf9f3}
+
+/* project table */
+.proj-table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+.proj-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.proj-table th{background:var(--surface-2);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);padding:10px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--line)}
+.proj-table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.proj-table tr:last-child td{border-bottom:none}
+.proj-table tr:hover td{background:var(--surface-2)}
+.status-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;letter-spacing:.03em}
+.status-done{background:var(--done-soft);color:#356046}
+.status-active{background:#fef3c7;color:#92400e}
+.tech-pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);margin:2px}
+.act-btn{font-family:inherit;font-size:12px;font-weight:600;border:1px solid var(--line-strong);background:none;color:var(--muted);padding:4px 10px;border-radius:7px;cursor:pointer;transition:all .12s}
+.act-btn:hover{border-color:var(--accent);color:var(--accent)}
+.act-btn.del:hover{border-color:#c0392b;color:#c0392b}
+.no-projects{text-align:center;padding:50px 20px;color:var(--muted);font-size:14px}
+
+/* modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(29,27,23,.45);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--line)}
+.modal-head h2{font-family:"Fraunces",serif;font-size:20px;font-weight:600}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--faint);line-height:1;padding:4px}
+.modal-close:hover{color:var(--ink)}
+.modal-body{padding:20px 24px 24px}
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:6px}
+.form-row input,.form-row select,.form-row textarea{width:100%;font-family:inherit;font-size:14px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;padding:9px 12px;color:var(--ink);outline:none;transition:border-color .15s}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent)}
+.form-row textarea{resize:vertical;min-height:70px}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;padding-top:4px}
+.btn-cancel{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid var(--line-strong);background:none;color:var(--muted);transition:all .15s}
+.btn-cancel:hover{border-color:var(--ink);color:var(--ink)}
+.btn-save{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff;transition:opacity .15s}
+.btn-save:hover{opacity:.88}
 </style>
+</head>
+<body>
 
-<div class="wrap" id="app">
-  <div class="loading">Loading your checklist…</div>
+<nav class="nav">
+  <div class="nav-brand">NWM Studio</div>
+  <button class="nav-tab active" onclick="switchTab('tracker')">Project Tracker</button>
+  <button class="nav-tab" onclick="switchTab('checklist')">Build Checklist</button>
+</nav>
+
+<!-- ══ PROJECT TRACKER PAGE ══ -->
+<div class="page active" id="page-tracker">
+  <div class="pt-header">
+    <div>
+      <h1>Project Tracker</h1>
+      <p>All your client projects, revenue, and timelines in one place.</p>
+    </div>
+    <button class="pt-add-btn" onclick="openModal()">+ Add Project</button>
+  </div>
+
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Revenue by year</h3>
+      <div class="chart-wrap"><canvas id="chartRevenue" role="img" aria-label="Revenue by year bar chart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Projects by technology</h3>
+      <div class="chart-wrap"><canvas id="chartTech" role="img" aria-label="Projects by technology doughnut chart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="year-row" id="year-row"></div>
+  <div id="proj-list"></div>
+</div>
+
+<!-- ══ CHECKLIST PAGE ══ -->
+<div class="page" id="page-checklist">
+  <div id="app"><div style="text-align:center;padding:60px;color:var(--muted);font-size:14px">Loading…</div></div>
+</div>
+
+<!-- ══ ADD/EDIT MODAL ══ -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-title">Add project</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label>Client name</label><input id="f-client" type="text" placeholder="e.g. Acme Corp"></div>
+      <div class="form-row"><label>Project / website name</label><input id="f-name" type="text" placeholder="e.g. E-commerce redesign"></div>
+      <div class="form-2col">
+        <div class="form-row"><label>Start date</label><input id="f-start" type="date"></div>
+        <div class="form-row"><label>End date</label><input id="f-end" type="date" placeholder="Leave blank if ongoing"></div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row"><label>Amount charged (₹)</label><input id="f-amount" type="number" placeholder="e.g. 25000"></div>
+        <div class="form-row"><label>Status</label>
+          <select id="f-status">
+            <option value="completed">Completed</option>
+            <option value="active">Active / Ongoing</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row"><label>Technologies used</label><input id="f-tech" type="text" placeholder="e.g. WordPress, Elementor, WooCommerce"></div>
+      <div class="form-row"><label>Notes (optional)</label><textarea id="f-notes" placeholder="Any extra details…"></textarea></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="saveProject()">Save project</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const PHASES = [
-  ["Pre-Start", [["agreement","Send Service Agreement and Invoice"]]],
-  ["To Get Started", [
+/* ════════════════════════════════
+   NAV
+════════════════════════════════ */
+function switchTab(tab){
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>{
+    t.classList.toggle('active', (i===0&&tab==='tracker')||(i===1&&tab==='checklist'));
+  });
+  document.getElementById('page-tracker').classList.toggle('active', tab==='tracker');
+  document.getElementById('page-checklist').classList.toggle('active', tab==='checklist');
+  if(tab==='tracker') renderTracker();
+}
+
+/* ════════════════════════════════
+   PROJECT TRACKER
+════════════════════════════════ */
+const PT_KEY = 'nwm:projects';
+let projects = [];
+let activeYear = 'all';
+let editingId = null;
+let revenueChart = null;
+let techChart = null;
+
+function ptLoad(){
+  try{ const r=localStorage.getItem(PT_KEY); if(r) projects=JSON.parse(r); } catch(e){}
+  renderTracker();
+}
+function ptSave(){ try{localStorage.setItem(PT_KEY,JSON.stringify(projects));}catch(e){} }
+function uid2(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function durationDays(start, end){
+  if(!start) return null;
+  const s = new Date(start);
+  const e = end ? new Date(end) : new Date();
+  return Math.max(0, Math.round((e-s)/(1000*60*60*24)));
+}
+function fmtDuration(days){
+  if(days===null) return '—';
+  if(days<30) return days+'d';
+  const m=Math.round(days/30.4);
+  if(m<12) return m+'mo';
+  const y=Math.floor(m/12), rm=m%12;
+  return y+'y'+(rm?' '+rm+'mo':'');
+}
+function fmtDate(d){ if(!d) return '—'; const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[1+1]; }
+function fmtMoney(n){ if(!n) return '—'; return '₹'+Number(n).toLocaleString('en-IN'); }
+function getYear(p){ return p.start ? new Date(p.start).getFullYear() : null; }
+
+function renderTracker(){
+  renderStats();
+  renderYearButtons();
+  renderProjectList();
+  renderCharts();
+}
+
+function renderStats(){
+  const total = projects.length;
+  const done = projects.filter(p=>p.status==='completed').length;
+  const revenue = projects.reduce((s,p)=>s+(Number(p.amount)||0),0);
+  const avgDays = projects.filter(p=>p.start&&p.end).map(p=>durationDays(p.start,p.end));
+  const avg = avgDays.length ? Math.round(avgDays.reduce((a,b)=>a+b,0)/avgDays.length) : null;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card"><div class="s-label">Total projects</div><div class="s-val">${total}</div><div class="s-sub">${done} completed</div></div>
+    <div class="stat-card"><div class="s-label">Total revenue</div><div class="s-val">₹${(revenue/1000).toFixed(0)}k</div><div class="s-sub">across all years</div></div>
+    <div class="stat-card"><div class="s-label">Avg duration</div><div class="s-val">${avg?fmtDuration(avg):'—'}</div><div class="s-sub">per project</div></div>
+    <div class="stat-card"><div class="s-label">Active now</div><div class="s-val">${projects.filter(p=>p.status==='active').length}</div><div class="s-sub">in progress</div></div>
+  `;
+}
+
+function renderYearButtons(){
+  const years = [...new Set(projects.map(p=>getYear(p)).filter(Boolean))].sort((a,b)=>b-a);
+  const row = document.getElementById('year-row');
+  if(!years.length){ row.innerHTML=''; return; }
+  row.innerHTML = '<span>Filter:</span>'
+    + `<button class="ybtn ${activeYear==='all'?'active':''}" onclick="setYear('all')">All years</button>`
+    + years.map(y=>`<button class="ybtn ${activeYear==y?'active':''}" onclick="setYear(${y})">${y}</button>`).join('');
+}
+function setYear(y){ activeYear=y; renderYearButtons(); renderProjectList(); }
+
+function renderProjectList(){
+  const filtered = activeYear==='all' ? projects : projects.filter(p=>getYear(p)==activeYear);
+  const byYear = {};
+  filtered.forEach(p=>{
+    const y = getYear(p)||'Unknown';
+    if(!byYear[y]) byYear[y]=[];
+    byYear[y].push(p);
+  });
+  const years = Object.keys(byYear).sort((a,b)=>b-a);
+  const el = document.getElementById('proj-list');
+  if(!filtered.length){
+    el.innerHTML=`<div class="no-projects">${projects.length?'No projects in this year.':'No projects yet — add your first one!'}</div>`;
+    return;
+  }
+  el.innerHTML = years.map(y=>`
+    <div style="margin-bottom:28px">
+      <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:12px;color:var(--ink)">${y}</div>
+      <div class="proj-table-wrap">
+        <table class="proj-table">
+          <thead><tr>
+            <th>Project</th><th>Client</th><th>Start</th><th>End</th><th>Duration</th><th>Technologies</th><th>Amount</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody>
+            ${byYear[y].map(p=>`<tr>
+              <td style="font-weight:600">${esc(p.name||'—')}</td>
+              <td>${esc(p.client||'—')}</td>
+              <td style="white-space:nowrap">${fmtDate(p.start)}</td>
+              <td style="white-space:nowrap">${p.end?fmtDate(p.end):'Ongoing'}</td>
+              <td style="white-space:nowrap">${fmtDuration(durationDays(p.start,p.end))}</td>
+              <td>${(p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tech-pill">${esc(t)}</span>`).join('')||'—'}</td>
+              <td style="white-space:nowrap;font-weight:600">${fmtMoney(p.amount)}</td>
+              <td><span class="status-pill ${p.status==='completed'?'status-done':'status-active'}">${p.status==='completed'?'Done':'Active'}</span></td>
+              <td style="white-space:nowrap">
+                <button class="act-btn" onclick="editProject('${p.id}')">Edit</button>
+                <button class="act-btn del" onclick="deleteProject('${p.id}')">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCharts(){
+  // Revenue by year
+  const yearRevMap = {};
+  projects.forEach(p=>{ const y=getYear(p); if(y){ yearRevMap[y]=(yearRevMap[y]||0)+(Number(p.amount)||0); }});
+  const revYears = Object.keys(yearRevMap).sort();
+  const revVals = revYears.map(y=>yearRevMap[y]);
+
+  if(revenueChart) revenueChart.destroy();
+  revenueChart = new Chart(document.getElementById('chartRevenue'),{
+    type:'bar',
+    data:{
+      labels: revYears.length ? revYears : ['No data'],
+      datasets:[{
+        label:'Revenue (₹)',
+        data: revYears.length ? revVals : [0],
+        backgroundColor:'#c2502f',
+        borderRadius:6,
+        borderSkipped:false
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{ticks:{callback:v=>'₹'+Math.round(v/1000)+'k',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},
+        x:{ticks:{font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Tech doughnut
+  const techMap = {};
+  projects.forEach(p=>{ (p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).forEach(t=>{ techMap[t]=(techMap[t]||0)+1; }); });
+  const techLabels = Object.keys(techMap).sort((a,b)=>techMap[b]-techMap[a]).slice(0,8);
+  const techVals = techLabels.map(t=>techMap[t]);
+  const palette = ['#c2502f','#4a7c59','#7c7568','#a59d8f','#d6cdb8','#c2502f','#6b8e73','#b07d6c'];
+
+  if(techChart) techChart.destroy();
+  techChart = new Chart(document.getElementById('chartTech'),{
+    type:'doughnut',
+    data:{
+      labels: techLabels.length ? techLabels : ['No data'],
+      datasets:[{
+        data: techLabels.length ? techVals : [1],
+        backgroundColor: techLabels.length ? palette.slice(0,techLabels.length) : ['#e4ddcd'],
+        borderWidth:2,
+        borderColor:'#fbf9f3'
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:10}}
+      }
+    }
+  });
+}
+
+/* modal */
+function openModal(id){
+  editingId = id||null;
+  document.getElementById('modal-title').textContent = id ? 'Edit project' : 'Add project';
+  const p = id ? projects.find(x=>x.id===id) : {};
+  document.getElementById('f-client').value = p.client||'';
+  document.getElementById('f-name').value = p.name||'';
+  document.getElementById('f-start').value = p.start||'';
+  document.getElementById('f-end').value = p.end||'';
+  document.getElementById('f-amount').value = p.amount||'';
+  document.getElementById('f-status').value = p.status||'completed';
+  document.getElementById('f-tech').value = p.tech||'';
+  document.getElementById('f-notes').value = p.notes||'';
+  document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); editingId=null; }
+
+function saveProject(){
+  const p = {
+    id: editingId || uid2(),
+    client: document.getElementById('f-client').value.trim(),
+    name: document.getElementById('f-name').value.trim(),
+    start: document.getElementById('f-start').value,
+    end: document.getElementById('f-end').value,
+    amount: document.getElementById('f-amount').value,
+    status: document.getElementById('f-status').value,
+    tech: document.getElementById('f-tech').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+  };
+  if(!p.name && !p.client){ alert('Please enter at least a project or client name.'); return; }
+  if(editingId){ const i=projects.findIndex(x=>x.id===editingId); if(i>-1) projects[i]=p; }
+  else { projects.push(p); }
+  ptSave(); closeModal(); renderTracker();
+}
+
+function editProject(id){ openModal(id); }
+function deleteProject(id){
+  if(!confirm('Delete this project?')) return;
+  projects = projects.filter(p=>p.id!==id);
+  ptSave(); renderTracker();
+}
+
+function esc(t){ return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ════════════════════════════════
+   CHECKLIST
+════════════════════════════════ */
+const PHASES=[
+  ["Pre-Start",[["agreement","Send Service Agreement and Invoice"]]],
+  ["To Get Started",[
     ["reference","Get / find reference website"],
     ["pagelist","Prepare page list"],
     ["scope","Get scope of work"],
@@ -109,7 +467,7 @@ const PHASES = [
     ["contentreq","Prepare content requirement list (logo, brand guideline, etc.)"],
     ["sandbox","Get sandbox details"],
   ]],
-  ["Development", [
+  ["Development",[
     ["getcontent","Get content from client"],
     ["dev","Development"],
     ["review1","Review & changes (if any)"],
@@ -125,18 +483,18 @@ const PHASES = [
     ["gdpr","Cookie / GDPR consent management / notice"],
     ["smtp","SMTP configuration"],
   ]],
-  ["Approval", [
+  ["Approval",[
     ["review2","Review & changes (if any)"],
     ["finalapproval","Approval on final website"],
   ]],
-  ["Pre-Launch", [
+  ["Pre-Launch",[
     ["backup1","Take offline backup"],
     ["rmplugins","Remove unused plugins & themes"],
     ["rmpages","Remove dummy, draft & unused pages / Elementor templates"],
     ["updplugins","Update all plugins"],
     ["migrate","Website migration to client server"],
   ]],
-  ["Post-Launch", [
+  ["Post-Launch",[
     ["recheckdesign","Recheck page design on desktop & mobile"],
     ["rechecklinks","Recheck links & buttons on desktop & mobile"],
     ["recheckforms","Recheck forms & SMTP configuration"],
@@ -147,122 +505,53 @@ const PHASES = [
     ["creds","Document & share login credentials"],
   ]],
 ];
-const TOTAL = PHASES.reduce((n,[,it])=>n+it.length,0);
-const KEY = "wbchecklist:data";
+const TOTAL=PHASES.reduce((n,[,it])=>n+it.length,0);
+const CL_KEY="wbchecklist:data";
+let clState={sites:[],active:null};
 
-let state = {sites:[], active:null};
-
-function load(){
-  try{ const raw = localStorage.getItem(KEY); if(raw) state = JSON.parse(raw); }
-  catch(e){ /* no data yet */ }
-  if(!state.sites) state.sites=[];
-  render();
+function clLoad(){
+  try{const r=localStorage.getItem(CL_KEY);if(r)clState=JSON.parse(r);}catch(e){}
+  if(!clState.sites)clState.sites=[];
+  clRender();
 }
-function save(){
-  try{ localStorage.setItem(KEY, JSON.stringify(state)); flashSaved(); }
-  catch(e){ console.error("save failed",e); }
+function clSave(){
+  try{localStorage.setItem(CL_KEY,JSON.stringify(clState));clFlash();}catch(e){}
 }
-function flashSaved(){
-  const el=document.getElementById("savedlbl");
-  if(!el) return; el.style.opacity=1; clearTimeout(el._t);
-  el._t=setTimeout(()=>el.style.opacity=.55,1200);
-}
-function uid(){return Math.random().toString(36).slice(2,9)}
-function activeSite(){return state.sites.find(s=>s.id===state.active)}
+function clFlash(){const el=document.getElementById("savedlbl");if(!el)return;el.style.opacity=1;clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity=.55,1200);}
+function clUid(){return Math.random().toString(36).slice(2,9)}
+function activeSite(){return clState.sites.find(s=>s.id===clState.active)}
 function siteProgress(s){const c=Object.values(s.checks||{}).filter(Boolean).length;return{done:c,pct:TOTAL?Math.round(c/TOTAL*100):0}}
 
-function addSite(){
-  const name=prompt("Client / website name:");
-  if(!name||!name.trim())return;
-  const s={id:uid(),name:name.trim(),checks:{},collapsed:{}};
-  state.sites.push(s); state.active=s.id; save(); render();
-}
-function renameSite(){
-  const s=activeSite(); if(!s)return;
-  const name=prompt("Rename site:",s.name); if(!name||!name.trim())return;
-  s.name=name.trim(); save(); render();
-}
-function deleteSite(){
-  const s=activeSite(); if(!s)return;
-  if(!confirm(`Delete "${s.name}" and its progress?`))return;
-  state.sites=state.sites.filter(x=>x.id!==s.id);
-  state.active=state.sites[0]?state.sites[0].id:null;
-  save(); render();
-}
-function resetSite(){
-  const s=activeSite(); if(!s)return;
-  if(!confirm(`Uncheck everything for "${s.name}"?`))return;
-  s.checks={}; save(); render();
-}
-function toggle(stepId,row){
-  const s=activeSite(); if(!s)return;
-  s.checks[stepId]=!s.checks[stepId];
-  if(s.checks[stepId]){row.classList.add("pop");setTimeout(()=>row.classList.remove("pop"),300);}
-  save(); render(true);
-}
-function togglePhase(i){
-  const s=activeSite(); if(!s)return;
-  s.collapsed=s.collapsed||{}; s.collapsed[i]=!s.collapsed[i]; save();
-}
+function addSite(){const n=prompt("Client / website name:");if(!n||!n.trim())return;const s={id:clUid(),name:n.trim(),checks:{},collapsed:{}};clState.sites.push(s);clState.active=s.id;clSave();clRender();}
+function renameSite(){const s=activeSite();if(!s)return;const n=prompt("Rename site:",s.name);if(!n||!n.trim())return;s.name=n.trim();clSave();clRender();}
+function deleteSite(){const s=activeSite();if(!s)return;if(!confirm(`Delete "${s.name}"?`))return;clState.sites=clState.sites.filter(x=>x.id!==s.id);clState.active=clState.sites[0]?clState.sites[0].id:null;clSave();clRender();}
+function resetSite(){const s=activeSite();if(!s)return;if(!confirm(`Uncheck everything for "${s.name}"?`))return;s.checks={};clSave();clRender();}
+function toggle(stepId,row){const s=activeSite();if(!s)return;s.checks[stepId]=!s.checks[stepId];if(s.checks[stepId]){row.classList.add("pop");setTimeout(()=>row.classList.remove("pop"),300);}clSave();clRender(true);}
+function togglePhase(i){const s=activeSite();if(!s)return;s.collapsed=s.collapsed||{};s.collapsed[i]=!s.collapsed[i];clSave();}
 
-function render(skipFull){
+function clRender(){
   const app=document.getElementById("app");
-  if(!state.sites.length){
-    app.innerHTML=`<div class="empty">
-      <h2>Track a website build</h2>
-      <p>Add a client site and tick off each step as you go.<br>Your progress is saved automatically.</p>
-      <button class="btn" onclick="addSite()">+ Add your first site</button>
-    </div>`; return;
+  if(!clState.sites.length){
+    app.innerHTML=`<div class="empty"><h2>Track a website build</h2><p>Add a client site and tick off each step as you go.<br>Progress is saved automatically.</p><button class="btn" onclick="addSite()">+ Add your first site</button></div>`;return;
   }
-  if(!state.active||!activeSite()) state.active=state.sites[0].id;
+  if(!clState.active||!activeSite())clState.active=clState.sites[0].id;
   const s=activeSite();
-  const {done,pct}=siteProgress(s);
-
-  const tabs=state.sites.map(st=>{
-    const p=siteProgress(st);
-    return `<button class="tab ${st.id===state.active?'active':''}" style="--p:${p.pct}" onclick="state.active='${st.id}';render()">
-      <span class="ring"></span>${escapeHtml(st.name)}</button>`;
-  }).join("")+`<button class="tab add" onclick="addSite()">+ Site</button>`;
-
+  const{done,pct}=siteProgress(s);
+  const tabs=clState.sites.map(st=>{const p=siteProgress(st);return`<button class="tab ${st.id===clState.active?'active':''}" style="--p:${p.pct}" onclick="clState.active='${st.id}';clRender()"><span class="ring"></span>${esc(st.name)}</button>`;}).join("")+`<button class="tab add" onclick="addSite()">+ Site</button>`;
   const phases=PHASES.map(([name,items],i)=>{
     const dc=items.filter(([id])=>s.checks[id]).length;
     const full=dc===items.length;
     const collapsed=s.collapsed&&s.collapsed[i];
     const pp=Math.round(dc/items.length*100);
-    const rows=items.map(([id,label])=>`
-      <div class="item ${s.checks[id]?'done':''}" onclick="toggle('${id}',this)">
-        <span class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span>
-        <span class="txt">${escapeHtml(label)}</span>
-      </div>`).join("");
-    return `<div class="phase ${collapsed?'collapsed':''}">
-      <div class="phase-head" onclick="togglePhase(${i});this.closest('.phase').classList.toggle('collapsed')">
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        <span class="name">${name}</span>
-        <span class="count ${full?'full':''}">${dc}/${items.length}</span>
-      </div>
-      <div class="pminibar"><i style="width:${pp}%"></i></div>
-      <div class="items">${rows}</div>
-    </div>`;
+    const rows=items.map(([id,label])=>`<div class="item ${s.checks[id]?'done':''}" onclick="toggle('${id}',this)"><span class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span><span class="txt">${esc(label)}</span></div>`).join("");
+    return`<div class="phase ${collapsed?'collapsed':''}"><div class="phase-head" onclick="togglePhase(${i});this.closest('.phase').classList.toggle('collapsed')"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg><span class="name">${name}</span><span class="count ${full?'full':''}">${dc}/${items.length}</span></div><div class="pminibar"><i style="width:${pp}%"></i></div><div class="items">${rows}</div></div>`;
   }).join("");
-
-  app.innerHTML=`
-    <div class="head">
-      <div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div>
-      <div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div>
-    </div>
-    <div class="sites">${tabs}</div>
-    <div class="bar"><i style="width:${pct}%"></i></div>
-    ${phases}
-    <div class="toolbar">
-      <span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved automatically</span>
-      <span>
-        <button class="link" onclick="renameSite()">Rename</button> ·
-        <button class="link" onclick="resetSite()">Reset ticks</button> ·
-        <button class="link" onclick="deleteSite()">Delete site</button>
-      </span>
-    </div>`;
+  app.innerHTML=`<div class="head"><div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div><div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div></div><div class="sites">${tabs}</div><div class="bar"><i style="width:${pct}%"></i></div>${phases}<div class="toolbar"><span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved automatically</span><span><button class="link" onclick="renameSite()">Rename</button> · <button class="link" onclick="resetSite()">Reset ticks</button> · <button class="link" onclick="deleteSite()">Delete site</button></span></div>`;
 }
-function escapeHtml(t){return t.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-load();
+/* init */
+ptLoad();
+clLoad();
 </script>
+</body>
+</html>
