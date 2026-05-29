@@ -1,0 +1,268 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3efe6;
+    --surface:#fbf9f3;
+    --surface-2:#f7f3ea;
+    --ink:#1d1b17;
+    --muted:#7c7568;
+    --faint:#a59d8f;
+    --line:#e4ddcd;
+    --line-strong:#d6cdb8;
+    --accent:#c2502f;
+    --accent-soft:#f1d9cf;
+    --done:#4a7c59;
+    --done-soft:#dcebe0;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(29,27,23,.04),0 8px 28px rgba(29,27,23,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:28px 20px 60px;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto}
+
+  /* Header */
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .title h1{font-family:"Fraunces",serif;font-weight:600;font-size:34px;letter-spacing:-.01em;line-height:1}
+  .title p{color:var(--muted);font-size:14px;margin-top:7px}
+  .overall{text-align:right;min-width:120px}
+  .overall .pct{font-family:"Fraunces",serif;font-size:30px;font-weight:600;line-height:1}
+  .overall .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin-top:4px}
+
+  /* Site tabs */
+  .sites{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+  .tab{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:8px;transition:all .15s ease;font-family:inherit}
+  .tab:hover{border-color:var(--accent);color:var(--ink)}
+  .tab.active{background:var(--ink);border-color:var(--ink);color:#fbf9f3}
+  .tab .ring{width:16px;height:16px;border-radius:50%;flex:none;
+    background:conic-gradient(var(--done) calc(var(--p,0)*1%), rgba(255,255,255,.18) 0)}
+  .tab.active .ring{background:conic-gradient(#fff calc(var(--p,0)*1%), rgba(255,255,255,.22) 0)}
+  .tab.add{background:transparent;border-style:dashed;color:var(--accent);font-weight:600}
+  .tab.add:hover{background:var(--accent-soft)}
+
+  /* Overall progress bar */
+  .bar{height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;margin-bottom:30px}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--done),#5e9670);
+    border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+  /* Phase */
+  .phase{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+  .phase-head{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+  .phase-head .name{font-family:"Fraunces",serif;font-size:18px;font-weight:600;flex:1;letter-spacing:-.01em}
+  .phase-head .count{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);
+    border:1px solid var(--line);padding:3px 9px;border-radius:99px;font-variant-numeric:tabular-nums}
+  .phase-head .count.full{background:var(--done-soft);border-color:#bcd9c4;color:#356046}
+  .chev{width:18px;height:18px;color:var(--faint);transition:transform .2s ease}
+  .phase.collapsed .chev{transform:rotate(-90deg)}
+  .phase.collapsed .items{display:none}
+  .pminibar{height:3px;background:var(--surface-2)}
+  .pminibar > i{display:block;height:100%;width:0;background:var(--done);transition:width .45s ease}
+
+  .items{padding:6px 8px 12px}
+  .item{display:flex;align-items:center;gap:13px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .12s}
+  .item:hover{background:var(--surface-2)}
+  .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-strong);flex:none;
+    display:grid;place-items:center;transition:all .18s ease;background:#fff}
+  .box svg{width:13px;height:13px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .22s ease .03s}
+  .item.done .box{background:var(--done);border-color:var(--done);transform:scale(1)}
+  .item.done .box svg{stroke-dashoffset:0}
+  .item.pop .box{animation:pop .28s ease}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
+  .item .txt{font-size:14.5px;line-height:1.35;transition:color .15s}
+  .item.done .txt{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+
+  /* Empty state */
+  .empty{text-align:center;padding:70px 20px;color:var(--muted)}
+  .empty h2{font-family:"Fraunces",serif;font-size:22px;color:var(--ink);font-weight:600;margin-bottom:8px}
+  .empty p{font-size:14px;margin-bottom:20px}
+  .btn{font-family:inherit;font-size:14px;font-weight:600;border-radius:10px;padding:11px 20px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fbf9f3;transition:opacity .15s}
+  .btn:hover{opacity:.88}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+  .link{background:none;border:none;font-family:inherit;font-size:13px;color:var(--faint);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .link:hover{color:var(--accent)}
+  .saved{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
+  .saved .dot{width:7px;height:7px;border-radius:50%;background:var(--done)}
+  .loading{text-align:center;padding:60px;color:var(--muted);font-size:14px}
+</style>
+
+<div class="wrap" id="app">
+  <div class="loading">Loading your checklist…</div>
+</div>
+
+<script>
+const PHASES = [
+  ["Pre-Start", [["agreement","Send Service Agreement and Invoice"]]],
+  ["To Get Started", [
+    ["reference","Get / find reference website"],
+    ["pagelist","Prepare page list"],
+    ["scope","Get scope of work"],
+    ["designapproval","Approval on final design reference to follow"],
+    ["structure","Create content structure"],
+    ["contentreq","Prepare content requirement list (logo, brand guideline, etc.)"],
+    ["sandbox","Get sandbox details"],
+  ]],
+  ["Development", [
+    ["getcontent","Get content from client"],
+    ["dev","Development"],
+    ["review1","Review & changes (if any)"],
+    ["addcontent","Additional content from client (if any)"],
+    ["privacy","Privacy Policy and Terms & Conditions"],
+    ["p404","Create 404 page"],
+    ["nwm","Add NWM credit in footer"],
+    ["elementor","Set subject, remove credits in Elementor forms"],
+    ["settings","Add logo, favicon, title & description in settings"],
+    ["mobile","Mobile layout"],
+    ["urls","Check all URL structures"],
+    ["spam","Spam protection"],
+    ["gdpr","Cookie / GDPR consent management / notice"],
+    ["smtp","SMTP configuration"],
+  ]],
+  ["Approval", [
+    ["review2","Review & changes (if any)"],
+    ["finalapproval","Approval on final website"],
+  ]],
+  ["Pre-Launch", [
+    ["backup1","Take offline backup"],
+    ["rmplugins","Remove unused plugins & themes"],
+    ["rmpages","Remove dummy, draft & unused pages / Elementor templates"],
+    ["updplugins","Update all plugins"],
+    ["migrate","Website migration to client server"],
+  ]],
+  ["Post-Launch", [
+    ["recheckdesign","Recheck page design on desktop & mobile"],
+    ["rechecklinks","Recheck links & buttons on desktop & mobile"],
+    ["recheckforms","Recheck forms & SMTP configuration"],
+    ["recheckfunc","Recheck other functionality (chatbot, cart, etc.)"],
+    ["backup2","Take backup"],
+    ["screenshots","Take screenshots of website"],
+    ["speedshots","Screenshot load time (GTmetrix & PageSpeed)"],
+    ["creds","Document & share login credentials"],
+  ]],
+];
+const TOTAL = PHASES.reduce((n,[,it])=>n+it.length,0);
+const KEY = "wbchecklist:data";
+
+let state = {sites:[], active:null};
+
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw) state = JSON.parse(raw); }
+  catch(e){ /* no data yet */ }
+  if(!state.sites) state.sites=[];
+  render();
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); flashSaved(); }
+  catch(e){ console.error("save failed",e); }
+}
+function flashSaved(){
+  const el=document.getElementById("savedlbl");
+  if(!el) return; el.style.opacity=1; clearTimeout(el._t);
+  el._t=setTimeout(()=>el.style.opacity=.55,1200);
+}
+function uid(){return Math.random().toString(36).slice(2,9)}
+function activeSite(){return state.sites.find(s=>s.id===state.active)}
+function siteProgress(s){const c=Object.values(s.checks||{}).filter(Boolean).length;return{done:c,pct:TOTAL?Math.round(c/TOTAL*100):0}}
+
+function addSite(){
+  const name=prompt("Client / website name:");
+  if(!name||!name.trim())return;
+  const s={id:uid(),name:name.trim(),checks:{},collapsed:{}};
+  state.sites.push(s); state.active=s.id; save(); render();
+}
+function renameSite(){
+  const s=activeSite(); if(!s)return;
+  const name=prompt("Rename site:",s.name); if(!name||!name.trim())return;
+  s.name=name.trim(); save(); render();
+}
+function deleteSite(){
+  const s=activeSite(); if(!s)return;
+  if(!confirm(`Delete "${s.name}" and its progress?`))return;
+  state.sites=state.sites.filter(x=>x.id!==s.id);
+  state.active=state.sites[0]?state.sites[0].id:null;
+  save(); render();
+}
+function resetSite(){
+  const s=activeSite(); if(!s)return;
+  if(!confirm(`Uncheck everything for "${s.name}"?`))return;
+  s.checks={}; save(); render();
+}
+function toggle(stepId,row){
+  const s=activeSite(); if(!s)return;
+  s.checks[stepId]=!s.checks[stepId];
+  if(s.checks[stepId]){row.classList.add("pop");setTimeout(()=>row.classList.remove("pop"),300);}
+  save(); render(true);
+}
+function togglePhase(i){
+  const s=activeSite(); if(!s)return;
+  s.collapsed=s.collapsed||{}; s.collapsed[i]=!s.collapsed[i]; save();
+}
+
+function render(skipFull){
+  const app=document.getElementById("app");
+  if(!state.sites.length){
+    app.innerHTML=`<div class="empty">
+      <h2>Track a website build</h2>
+      <p>Add a client site and tick off each step as you go.<br>Your progress is saved automatically.</p>
+      <button class="btn" onclick="addSite()">+ Add your first site</button>
+    </div>`; return;
+  }
+  if(!state.active||!activeSite()) state.active=state.sites[0].id;
+  const s=activeSite();
+  const {done,pct}=siteProgress(s);
+
+  const tabs=state.sites.map(st=>{
+    const p=siteProgress(st);
+    return `<button class="tab ${st.id===state.active?'active':''}" style="--p:${p.pct}" onclick="state.active='${st.id}';render()">
+      <span class="ring"></span>${escapeHtml(st.name)}</button>`;
+  }).join("")+`<button class="tab add" onclick="addSite()">+ Site</button>`;
+
+  const phases=PHASES.map(([name,items],i)=>{
+    const dc=items.filter(([id])=>s.checks[id]).length;
+    const full=dc===items.length;
+    const collapsed=s.collapsed&&s.collapsed[i];
+    const pp=Math.round(dc/items.length*100);
+    const rows=items.map(([id,label])=>`
+      <div class="item ${s.checks[id]?'done':''}" onclick="toggle('${id}',this)">
+        <span class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span>
+        <span class="txt">${escapeHtml(label)}</span>
+      </div>`).join("");
+    return `<div class="phase ${collapsed?'collapsed':''}">
+      <div class="phase-head" onclick="togglePhase(${i});this.closest('.phase').classList.toggle('collapsed')">
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        <span class="name">${name}</span>
+        <span class="count ${full?'full':''}">${dc}/${items.length}</span>
+      </div>
+      <div class="pminibar"><i style="width:${pp}%"></i></div>
+      <div class="items">${rows}</div>
+    </div>`;
+  }).join("");
+
+  app.innerHTML=`
+    <div class="head">
+      <div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div>
+      <div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div>
+    </div>
+    <div class="sites">${tabs}</div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    ${phases}
+    <div class="toolbar">
+      <span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved automatically</span>
+      <span>
+        <button class="link" onclick="renameSite()">Rename</button> ·
+        <button class="link" onclick="resetSite()">Reset ticks</button> ·
+        <button class="link" onclick="deleteSite()">Delete site</button>
+      </span>
+    </div>`;
+}
+function escapeHtml(t){return t.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+load();
+</script>
