@@ -186,48 +186,45 @@ body{min-height:100vh}
 .pdf-close-btn:hover{background:rgba(255,255,255,.25)}
 
 /* PDF DOCUMENT STYLES (used in preview + export) */
-.pdf-doc{background:#fff;width:210mm;max-width:100%;margin:0 auto;font-family:"Hanken Grotesk",Arial,sans-serif;font-size:11pt;color:#2a2622;line-height:1.6}
-.pdf-page{padding:0;min-height:auto;position:relative}
-.pdf-inner{padding:20mm 18mm 16mm}
-.pdf-topbar{height:6px;background:#c2502f;width:100%}
-.pdf-logo{height:64px;width:auto;object-fit:contain;display:block;margin:0 auto 6px}
-.pdf-logo-center{text-align:center;margin-bottom:24px}
-.pdf-doc-title{font-family:"Fraunces",Georgia,serif;font-size:28pt;font-weight:600;margin:6px 0 4px;letter-spacing:-.01em;color:#1d1b17;text-align:center}
-.pdf-title-sub{text-align:center;font-size:10pt;color:#c2502f;text-transform:uppercase;letter-spacing:.2em;font-weight:600;margin-bottom:22px}
-.pdf-divider{border:none;border-top:1px solid #ebe4d6;margin:0 0 24px}
+.pdf-doc{background:#fff;width:210mm;max-width:100%;margin:0 auto;font-family:Arial,"Helvetica Neue",sans-serif;font-size:11pt;color:#1a1a1a;line-height:1.65}
+.pdf-page{padding:22mm 20mm;position:relative;min-height:auto}
+.pdf-page-num{position:absolute;bottom:12mm;right:20mm;font-size:9pt;color:#555}
+.pdf-cover-logo{height:74px;width:auto;object-fit:contain;margin:40px 0 30px}
+.pdf-doc-title{font-size:30pt;font-weight:700;margin:6px 0 16px;letter-spacing:-.01em;color:#111}
+.pdf-divider{border:none;border-top:1px solid #ccc;margin:0 0 28px}
 .pdf-meta-table{width:100%;border-collapse:collapse;margin-bottom:28px}
-.pdf-meta-table td{border:1px solid #ebe4d6;padding:11px 16px;font-size:10.5pt}
-.pdf-meta-table td:first-child{font-weight:600;background:#faf7f0;width:36%;color:#7c7568;text-transform:uppercase;font-size:9pt;letter-spacing:.06em}
-.pdf-section-title{font-family:"Fraunces",Georgia,serif;font-size:14pt;font-weight:600;margin:26px 0 12px;padding-bottom:8px;border-bottom:2px solid #c2502f;color:#1d1b17;display:inline-block}
-.pdf-section-wrap{display:block;margin-bottom:4px}
-.pdf-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
-.pdf-party-box{background:#faf7f0;border:1px solid #ebe4d6;border-left:3px solid #c2502f;border-radius:4px;padding:16px 18px}
-.pdf-party-box h4{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#c2502f;margin-bottom:10px}
-.pdf-party-box p{font-size:10pt;margin:3px 0;line-height:1.5;color:#3a352e}
-.pdf-scope-list{margin:0;padding-left:0;list-style:none}
-.pdf-scope-list li{margin-bottom:9px;font-size:10.5pt;padding-left:22px;position:relative;color:#3a352e}
-.pdf-scope-list li:before{content:"";position:absolute;left:0;top:7px;width:8px;height:8px;background:#c2502f;border-radius:50%}
-.pdf-payment-table{width:100%;border-collapse:collapse;margin:14px 0}
-.pdf-payment-table th{background:#c2502f;color:#fff;padding:11px 14px;text-align:left;font-size:9.5pt;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
-.pdf-payment-table td{padding:11px 14px;border-bottom:1px solid #ebe4d6;font-size:10pt;color:#3a352e}
-.pdf-payment-table tr:last-child td{border-bottom:none}
-.pdf-payment-table tr.total-row{background:#faf7f0}
-.pdf-payment-table tr.total-row td{font-weight:700;color:#1d1b17}
-.pdf-tc-list{padding-left:0;margin:0;list-style:none;counter-reset:tc}
-.pdf-tc-list li{margin-bottom:11px;font-size:10pt;line-height:1.55;padding-left:30px;position:relative;color:#3a352e;counter-increment:tc}
-.pdf-tc-list li:before{content:counter(tc);position:absolute;left:0;top:0;width:20px;height:20px;background:#c2502f;color:#fff;border-radius:50%;font-size:9pt;font-weight:700;display:flex;align-items:center;justify-content:center}
-.pdf-sig-section{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
-.pdf-sig-box .sig-label{font-size:9pt;color:#7c7568;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px}
-.pdf-sig-img{height:66px;width:auto;object-fit:contain;display:block;margin-bottom:2px}
-.pdf-sig-line{border-top:1.5px solid #c2502f;padding-top:8px;font-size:10.5pt;font-weight:700;color:#1d1b17}
-.pdf-sig-sub{font-size:9pt;color:#7c7568;margin-top:3px}
-.pdf-bank-box{background:#faf7f0;border:1px solid #ebe4d6;border-radius:4px;padding:16px 18px;margin-top:16px}
-.pdf-bank-box h4{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#c2502f;margin-bottom:12px}
-.pdf-bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:9.5pt}
-.pdf-bank-grid span{color:#7c7568;font-size:8.5pt;text-transform:uppercase;letter-spacing:.04em}
-.pdf-bank-grid strong{display:block;color:#1d1b17;margin-top:1px}
-.pdf-footer-bar{margin-top:32px;padding:14px 18mm;border-top:2px solid #c2502f;display:flex;justify-content:space-between;font-size:8.5pt;color:#7c7568;background:#faf7f0}
-.pdf-note{font-size:9.5pt;color:#7c7568;margin-top:12px;font-style:italic;line-height:1.5}
+.pdf-meta-table td{border:1px solid #ddd;padding:13px 16px;font-size:11pt}
+.pdf-meta-table td:first-child{font-weight:700;background:#f4f4f4;width:34%;color:#333}
+.pdf-h1{font-size:16pt;font-weight:700;margin:0 0 14px;color:#111}
+.pdf-h2{font-size:12.5pt;font-weight:700;margin:20px 0 8px;color:#111}
+.pdf-body{font-size:10.5pt;margin-bottom:12px;color:#222;line-height:1.65}
+.pdf-toc{margin-top:10px}
+.pdf-toc-row{display:flex;align-items:baseline;font-size:10.5pt;margin-bottom:9px;color:#222}
+.pdf-toc-row .toc-title{white-space:nowrap}
+.pdf-toc-row .toc-dots{flex:1;border-bottom:1px dotted #aaa;margin:0 6px;position:relative;top:-3px}
+.pdf-toc-row .toc-sub{padding-left:18px}
+.pdf-toc-row .toc-page{white-space:nowrap;color:#555}
+.pdf-two-col-parties{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:14px 0 8px}
+.pdf-party h4{font-size:10pt;font-weight:700;margin-bottom:8px;color:#111}
+.pdf-party p{font-size:10pt;margin:3px 0;line-height:1.55;color:#333}
+.pdf-party p .lbl{font-weight:600;color:#111}
+.pdf-bullets{margin:6px 0 14px;padding-left:0;list-style:none}
+.pdf-bullets li{font-size:10.5pt;margin-bottom:6px;padding-left:20px;position:relative;color:#222}
+.pdf-bullets li:before{content:"●";position:absolute;left:0;color:#111;font-size:8pt;top:2px}
+.pdf-payment-table{width:100%;border-collapse:collapse;margin:10px 0 16px}
+.pdf-payment-table th{border:1px solid #ccc;background:#f4f4f4;padding:10px 14px;text-align:left;font-size:10pt;font-weight:700;color:#111}
+.pdf-payment-table td{border:1px solid #ddd;padding:10px 14px;font-size:10pt;color:#222}
+.pdf-bank{font-size:10pt;line-height:1.85;margin:8px 0 14px;color:#222}
+.pdf-bank .lbl{font-weight:700;color:#111}
+.pdf-numbered{padding-left:0;margin:8px 0;list-style:none;counter-reset:nc}
+.pdf-numbered>li{font-size:10.5pt;margin-bottom:12px;padding-left:26px;position:relative;color:#222;counter-increment:nc;line-height:1.6}
+.pdf-numbered>li:before{content:counter(nc) ".";position:absolute;left:0;font-weight:700;color:#111}
+.pdf-callout{background:#f4f4f4;border-left:3px solid #888;padding:12px 16px;font-size:10pt;margin:14px 0;color:#333;line-height:1.6}
+.pdf-sig-section{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:50px}
+.pdf-sig-box .sig-label{font-size:9.5pt;color:#555;margin-bottom:6px;font-weight:600}
+.pdf-sig-img{height:64px;width:auto;object-fit:contain;display:block;margin-bottom:2px}
+.pdf-sig-line{border-top:1px solid #333;padding-top:8px;font-size:10.5pt;font-weight:700;color:#111}
+.pdf-sig-sub{font-size:9.5pt;color:#555;margin-top:3px}
 
 /* INVOICE specific */
 .inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
@@ -328,36 +325,54 @@ body{min-height:100vh}
         </select>
       </div>
 
-      <div class="section-divider">Parties</div>
+      <div class="section-divider">Document header</div>
       <div class="field-grid">
         <div class="field-group"><label>Effective date</label><input type="date" id="ag-date"></div>
         <div class="field-group"><label>Contract version</label><input type="text" id="ag-version" value="1.0"></div>
+        <div class="field-group"><label>Project name</label><input type="text" id="ag-proj" placeholder="Shopify Store Development"></div>
+        <div class="field-group"><label>Project type</label><input type="text" id="ag-proj-type" placeholder="E-commerce"></div>
+      </div>
+
+      <div class="section-divider">Contractor details (you)</div>
+      <div class="field-grid">
+        <div class="field-group"><label>Your name</label><input type="text" id="ag-me-name" value="Neelam Gawande"></div>
+        <div class="field-group"><label>Your address</label><input type="text" id="ag-me-addr" value="Flat 404, Madhuban Residency"></div>
+        <div class="field-group"><label>Your email</label><input type="email" id="ag-me-email" value="hello@neelamwebmarketing.com"></div>
+        <div class="field-group"><label>Your phone</label><input type="text" id="ag-me-phone" value="+91 8140115340"></div>
+      </div>
+
+      <div class="section-divider">Client details</div>
+      <div class="field-grid">
         <div class="field-group"><label>Client full name / company</label><input type="text" id="ag-client" placeholder="Ali Hasnen"></div>
         <div class="field-group"><label>Client address</label><input type="text" id="ag-client-addr" placeholder="Plot No. 255, Bhavnagar, Gujarat"></div>
         <div class="field-group"><label>Client email</label><input type="email" id="ag-client-email" placeholder="client@email.com"></div>
         <div class="field-group"><label>Client phone</label><input type="text" id="ag-client-phone" placeholder="+91 XXXXX XXXXX"></div>
       </div>
 
-      <div class="section-divider">Project</div>
-      <div class="field-grid">
-        <div class="field-group"><label>Project name</label><input type="text" id="ag-proj" placeholder="Shopify Store Development"></div>
-        <div class="field-group"><label>Project type</label><input type="text" id="ag-proj-type" placeholder="E-commerce / Redesign / etc."></div>
-        <div class="field-group"><label>Start date</label><input type="date" id="ag-start"></div>
-        <div class="field-group"><label>Estimated end date</label><input type="date" id="ag-end"></div>
-      </div>
-      <div class="field-group"><label>Project description</label><textarea id="ag-desc" rows="3" placeholder="Brief description of what you will deliver…"></textarea></div>
+      <div class="section-divider">2.1 Project Description</div>
+      <div class="field-group"><textarea id="ag-desc" rows="4" placeholder="Describe the project in detail…"></textarea></div>
 
-      <div class="section-divider" id="scope-heading">
-        Scope of Work
+      <div class="section-divider">
+        Scope Sub-sections
         <button class="toggle-section" id="toggle-scope" onclick="toggleSection('scope')">Included ✓</button>
       </div>
       <div id="section-scope">
-        <div id="scope-items"></div>
-        <button class="add-scope-btn" onclick="addScopeItem()">+ Add scope item</button>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Each sub-section (e.g. "Pages &amp; Sections", "Design &amp; UI Enhancements") has a heading and its own bullet points. Add, rename, or delete as needed.</p>
+        <div id="scope-subsections"></div>
+        <button class="add-scope-btn" onclick="addScopeSubsection()">+ Add sub-section</button>
+      </div>
+
+      <div class="section-divider">2.9 Acceptance</div>
+      <div class="field-group"><label>Acceptance review period (business days)</label><input type="number" id="ag-acceptance-days" value="5"></div>
+
+      <div class="section-divider">Timeline &amp; Delays</div>
+      <div class="field-grid">
+        <div class="field-group"><label>Estimated start date</label><input type="date" id="ag-start"></div>
+        <div class="field-group"><label>Estimated end date</label><input type="date" id="ag-end"></div>
       </div>
 
       <div class="section-divider">
-        Payment
+        Fees &amp; Payment
         <button class="toggle-section" id="toggle-payment" onclick="toggleSection('payment')">Included ✓</button>
       </div>
       <div id="section-payment">
@@ -366,22 +381,22 @@ body{min-height:100vh}
           <div class="field-group"><label>Advance % (default 50%)</label><input type="number" id="ag-adv-pct" value="50" min="0" max="100" oninput="calcAgPayment()"></div>
           <div class="field-group"><label>Advance amount (₹)</label><input type="number" id="ag-adv-amt" placeholder="Auto" readonly style="background:var(--surface);font-weight:600"></div>
           <div class="field-group"><label>Final amount (₹)</label><input type="number" id="ag-final-amt" placeholder="Auto" readonly style="background:var(--surface);font-weight:600"></div>
-        </div>
-        <div class="field-grid">
-          <div class="field-group"><label>Late payment charge (%/month)</label><input type="number" id="ag-late" value="1.5"></div>
           <div class="field-group"><label>Advance due</label><input type="text" id="ag-adv-due" value="Before work commences"></div>
           <div class="field-group"><label>Final due</label><input type="text" id="ag-final-due" value="Before final files are handed over"></div>
-          <div class="field-group"><label>Hourly rate for extras (₹/hr)</label><input type="number" id="ag-hourly" value="750"></div>
+          <div class="field-group"><label>Late payment charge (%/month)</label><input type="number" id="ag-late" value="1.5"></div>
+          <div class="field-group"><label>Expense handling markup (%)</label><input type="number" id="ag-markup" value="20"></div>
         </div>
       </div>
 
       <div class="section-divider">
-        Revisions
+        Changes &amp; Revisions
         <button class="toggle-section" id="toggle-revisions" onclick="toggleSection('revisions')">Included ✓</button>
       </div>
       <div id="section-revisions">
         <div class="field-grid">
           <div class="field-group"><label>Included revision rounds</label><input type="number" id="ag-rev-rounds" value="2"></div>
+          <div class="field-group"><label>Hourly rate for extras (₹/hr)</label><input type="number" id="ag-hourly" value="750"></div>
+          <div class="field-group"><label>Scope creep threshold (%)</label><input type="number" id="ag-creep" value="10"></div>
           <div class="field-group"><label>Post-launch support (days)</label><input type="number" id="ag-support" value="30"></div>
         </div>
       </div>
@@ -393,6 +408,11 @@ body{min-height:100vh}
       <div id="section-tc">
         <div id="tc-items"></div>
         <button class="add-scope-btn" onclick="addTcItem()">+ Add clause</button>
+      </div>
+
+      <div class="section-divider">Options</div>
+      <div class="field-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ag-toc" checked style="width:auto"> Include Table of Contents page</label>
       </div>
 
       <button class="generate-btn" onclick="generateAgreement()">Generate Service Agreement PDF</button>
@@ -789,31 +809,30 @@ async function deleteProject(id){
 }
 
 /* ── DOCUMENTS ── */
-const DEFAULT_SCOPE = [
-  "Design and development of a brand-new website",
-  "Home, About Us, Services, Contact Us pages",
-  "Mobile-first responsive design",
-  "SEO basics: meta tags, Google Analytics setup",
-  "Privacy Policy and Terms & Conditions pages",
-  "Website launch and migration to client server",
+const DEFAULT_SUBSECTIONS = [
+  {title:"Pages & Sections", items:["Home","About Us","Services","Contact Us"]},
+  {title:"Design & UI Enhancements", items:["UI refinement based on the approved design","Spacing, typography, and alignment improvements","Consistent color usage and visual hierarchy","Mobile-first responsive adjustments"]},
+  {title:"Backend & Admin Panel", items:["Platform setup","Clean and structured backend for easy editing","Admin access for content updates (text, images, links)"]},
+  {title:"SEO & Performance Optimization", items:["Mobile responsiveness","Add Google Search Console + Google Analytics tracking code"]},
+  {title:"Policy Pages Setup", items:["Privacy Policy","Terms & Conditions"]},
+  {title:"Website Launch", items:["Coordinate with client for domain and hosting credentials"]},
 ];
 const DEFAULT_TC = [
   "Scope of Work – The scope is limited to the deliverables mentioned in this proposal. Any new features, additional pages, or redesign requests outside this scope will be quoted separately.",
-  "Content & Branding – The client will provide all text, images, logos, and branding assets.",
-  "Hosting & Domain – The client is responsible for purchasing and managing hosting, domain, and SSL certificates. Designer will assist with setup and configuration.",
-  "Admin Access – Client will be provided with Admin credentials for basic edits (text, images, videos). Structural changes must be handled by the developer.",
-  "Timeline – The timeline is based on timely receipt of content and approvals from the client. Delays in content submission or feedback may extend the delivery schedule.",
+  "Content & Branding – The client will provide all text, images, Lottie files, logos, and branding assets.",
+  "Hosting & Domain – The client is responsible for purchasing and managing hosting, domain, and SSL certificates. I will assist with setup and configuration (if applicable).",
+  "Admin Access – Client will be provided with Admin credentials for basic edits (text, images, videos). Structural changes, design modifications, or advanced functionality adjustments must be handled by the developer.",
+  "Timeline – The timeline mentioned is based on the timely receipt of content and approvals from the client. Delays in content submission or feedback may extend the delivery schedule.",
   "Revisions – Minor revisions (text/image swaps) are included within the scope. Major design/layout changes after approval will be charged additionally.",
-  "Warranty & Support – 30 days of free post-launch support for bug fixes and technical assistance. New feature requests will be billed separately.",
-  "Ownership – Upon full payment, the website and its content will be the sole property of the client. Third-party items (themes, plugins, stock images) follow their original provider licenses.",
+  "Warranty & Support – 30 days of free post-launch support will be provided for bug fixes and technical assistance. New feature requests, plugin purchases, or third-party integrations will be billed separately.",
+  "Ownership – Upon full payment, the website and its content will be the sole property of the client. If we use any third-party items like themes, plugins, or stock images, they will still follow the rules and licenses set by their original providers.",
   "Confidentiality – Both parties agree to maintain the confidentiality of business information, data, and access credentials shared during the project.",
-  "Late Payments – Invoices not settled within 14 days will attract a monthly charge of 1.5% on the outstanding balance.",
 ];
 
 let sectionStates={scope:true,payment:true,revisions:true,tc:true};
 
 function initDocBuilder(){
-  renderScopeItems(DEFAULT_SCOPE);
+  renderScopeSubsections(DEFAULT_SUBSECTIONS);
   renderTcItems(DEFAULT_TC);
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('ag-date').value=today;
@@ -829,22 +848,48 @@ function toggleSection(name){
   else{btn.textContent='Excluded ✗';btn.classList.add('off');section.style.display='none';}
 }
 
-function renderScopeItems(items){
-  const c=document.getElementById('scope-items');
+/* SCOPE SUB-SECTIONS */
+function renderScopeSubsections(subs){
+  const c=document.getElementById('scope-subsections');
   c.innerHTML='';
-  items.forEach((txt,i)=>{
-    const d=document.createElement('div');d.className='scope-item';
-    d.innerHTML=`<textarea rows="2">${esc(txt)}</textarea><button class="scope-remove" onclick="this.parentNode.remove()">×</button>`;
-    c.appendChild(d);
+  subs.forEach(sub=>addScopeSubsection(sub.title, sub.items));
+}
+function addScopeSubsection(title='', items=['']){
+  const c=document.getElementById('scope-subsections');
+  const wrap=document.createElement('div');
+  wrap.className='scope-subsection';
+  wrap.style.cssText='border:1px solid var(--line-strong);border-radius:10px;padding:14px;margin-bottom:12px;background:var(--surface-2)';
+  wrap.innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+      <input type="text" class="sub-title" value="${esc(title)}" placeholder="Sub-section heading (e.g. Pages & Sections)" style="flex:1;font-family:inherit;font-size:13.5px;font-weight:600;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;padding:8px 12px;color:var(--ink);outline:none">
+      <button onclick="this.closest('.scope-subsection').remove()" style="background:none;border:none;color:var(--faint);cursor:pointer;font-size:18px;padding:4px 8px" title="Delete sub-section">🗑</button>
+    </div>
+    <div class="sub-items"></div>
+    <button onclick="addScopeBullet(this)" style="font-family:inherit;font-size:12px;font-weight:600;border:1px dashed var(--line-strong);background:none;color:var(--muted);padding:6px 12px;border-radius:7px;cursor:pointer;margin-top:4px">+ Add bullet</button>
+  `;
+  c.appendChild(wrap);
+  const itemsDiv=wrap.querySelector('.sub-items');
+  (items.length?items:['']).forEach(it=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:6px;align-items:center;margin-bottom:6px';
+    row.innerHTML=`<span style="color:var(--accent)">•</span><input type="text" class="sub-bullet" value="${esc(it)}" placeholder="Bullet point…" style="flex:1;font-family:inherit;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;color:var(--ink);outline:none"><button onclick="this.parentNode.remove()" style="background:none;border:none;color:var(--faint);cursor:pointer;font-size:16px;padding:2px 6px">×</button>`;
+    itemsDiv.appendChild(row);
   });
 }
-function addScopeItem(){
-  const c=document.getElementById('scope-items');
-  const d=document.createElement('div');d.className='scope-item';
-  d.innerHTML=`<textarea rows="2" placeholder="Describe this scope item…"></textarea><button class="scope-remove" onclick="this.parentNode.remove()">×</button>`;
-  c.appendChild(d);d.querySelector('textarea').focus();
+function addScopeBullet(btn){
+  const itemsDiv=btn.closest('.scope-subsection').querySelector('.sub-items');
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px;align-items:center;margin-bottom:6px';
+  row.innerHTML=`<span style="color:var(--accent)">•</span><input type="text" class="sub-bullet" placeholder="Bullet point…" style="flex:1;font-family:inherit;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;color:var(--ink);outline:none"><button onclick="this.parentNode.remove()" style="background:none;border:none;color:var(--faint);cursor:pointer;font-size:16px;padding:2px 6px">×</button>`;
+  itemsDiv.appendChild(row);
+  row.querySelector('input').focus();
 }
-function getScopeItems(){return [...document.querySelectorAll('#scope-items textarea')].map(t=>t.value.trim()).filter(Boolean);}
+function getScopeSubsections(){
+  return [...document.querySelectorAll('.scope-subsection')].map(sub=>({
+    title:sub.querySelector('.sub-title').value.trim(),
+    items:[...sub.querySelectorAll('.sub-bullet')].map(b=>b.value.trim()).filter(Boolean)
+  })).filter(s=>s.title||s.items.length);
+}
 
 function renderTcItems(items){
   const c=document.getElementById('tc-items');c.innerHTML='';
@@ -993,126 +1038,173 @@ function quickGenInvoice(milestone){
 
 /* ── GENERATE AGREEMENT ── */
 function generateAgreement(){
-  const d=v=>'document.getElementById(v)?.value||""';
   const G=id=>document.getElementById(id)?.value||'';
   const fee=Number(G('ag-fee'))||0;
   const advPct=Number(G('ag-adv-pct'))||50;
   const advAmt=Math.round(fee*advPct/100);
   const finalAmt=fee-advAmt;
-  const scope=getScopeItems();
+  const subs=getScopeSubsections();
   const tc=getTcItems();
   const revRounds=G('ag-rev-rounds')||'2';
   const support=G('ag-support')||'30';
   const hourly=G('ag-hourly')||'750';
   const late=G('ag-late')||'1.5';
+  const markup=G('ag-markup')||'20';
+  const creep=G('ag-creep')||'10';
+  const acceptDays=G('ag-acceptance-days')||'5';
+  const includeToc=document.getElementById('ag-toc').checked;
+
+  // Build scope sub-sections HTML with numbering 2.2, 2.3...
+  let scopeNum=2;
+  const scopeHtml=subs.map(s=>{
+    scopeNum++;
+    return `<div class="pdf-h2">2.${scopeNum-1} ${esc(s.title)}</div>
+      <ul class="pdf-bullets">${s.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
+  }).join('');
+  const acceptanceNum=scopeNum;
+
+  // Table of contents
+  const tocHtml=includeToc?`
+    <div class="pdf-page">
+      <div class="pdf-h1">Table of Contents</div>
+      <div class="pdf-toc">
+        <div class="pdf-toc-row"><span class="toc-title">1. Parties &amp; Effective Date</span><span class="toc-dots"></span><span class="toc-page">3</span></div>
+        <div class="pdf-toc-row"><span class="toc-title">2. Project Scope &amp; Deliverables</span><span class="toc-dots"></span><span class="toc-page">3</span></div>
+        ${subs.map(s=>`<div class="pdf-toc-row"><span class="toc-title toc-sub">${esc(s.title)}</span><span class="toc-dots"></span><span class="toc-page">4</span></div>`).join('')}
+        <div class="pdf-toc-row"><span class="toc-title">3. Timeline &amp; Delays</span><span class="toc-dots"></span><span class="toc-page">5</span></div>
+        ${sectionStates.payment?`<div class="pdf-toc-row"><span class="toc-title">4. Fees &amp; Payment</span><span class="toc-dots"></span><span class="toc-page">5</span></div>`:''}
+        ${sectionStates.revisions?`<div class="pdf-toc-row"><span class="toc-title">5. Changes &amp; Revisions</span><span class="toc-dots"></span><span class="toc-page">6</span></div>`:''}
+        ${sectionStates.tc?`<div class="pdf-toc-row"><span class="toc-title">6. Terms &amp; Conditions</span><span class="toc-dots"></span><span class="toc-page">7</span></div>`:''}
+      </div>
+      <div class="pdf-page-num">2</div>
+    </div>`:'';
+
+  let secNum = sectionStates.payment ? 4 : 3;
+  let revNum = sectionStates.payment ? 5 : 4;
+  let tcNum = revNum + (sectionStates.revisions?1:0);
 
   const html=`<div class="pdf-doc">
-    <div class="pdf-topbar"></div>
-    <div class="pdf-page"><div class="pdf-inner">
-      <div class="pdf-logo-center"><img class="pdf-logo" src="${LOGO_SRC}" alt="Neelam Web Marketing"></div>
-      <div class="pdf-doc-title">Service Agreement</div>
-      <div class="pdf-title-sub">and Contract</div>
-
+    <!-- COVER -->
+    <div class="pdf-page">
+      <img class="pdf-cover-logo" src="${LOGO_SRC}" alt="Neelam Web Marketing">
+      <div class="pdf-doc-title">Service Agreement and Contract</div>
+      <hr class="pdf-divider">
       <table class="pdf-meta-table">
         <tr><td>Effective Date</td><td>${formatDateFull(G('ag-date'))}</td></tr>
-        <tr><td>Designer</td><td>Neelam Gawande</td></tr>
+        <tr><td>Designer</td><td>${esc(G('ag-me-name'))}</td></tr>
         <tr><td>Client</td><td>${esc(G('ag-client'))}</td></tr>
         <tr><td>Project Name</td><td>${esc(G('ag-proj'))}</td></tr>
         <tr><td>Contract Version</td><td>${esc(G('ag-version'))}</td></tr>
       </table>
+      <div class="pdf-page-num">1</div>
+    </div>
 
-      <div class="pdf-section-wrap"><div class="pdf-section-title">1. Parties</div></div>
-      <div class="pdf-two-col">
-        <div class="pdf-party-box">
+    ${tocHtml}
+
+    <!-- PARTIES + SCOPE -->
+    <div class="pdf-page" style="page-break-before:always">
+      <div class="pdf-h1">1. Parties &amp; Effective Date</div>
+      <p class="pdf-body">This Freelance Services Agreement ("Agreement") is entered into as of ${formatDateFull(G('ag-date'))}, between:</p>
+      <div class="pdf-two-col-parties">
+        <div class="pdf-party">
           <h4>Contractor</h4>
-          <p><strong>Neelam Gawande</strong></p>
-          <p>Flat 404, Madhuban Residency</p>
-          <p>hello@neelamwebmarketing.com</p>
-          <p>+91 8140115340</p>
+          <p><span class="lbl">Full Name:</span> ${esc(G('ag-me-name'))}</p>
+          <p><span class="lbl">Address:</span> ${esc(G('ag-me-addr'))}</p>
+          <p><span class="lbl">Email:</span> ${esc(G('ag-me-email'))}</p>
+          <p><span class="lbl">Phone:</span> ${esc(G('ag-me-phone'))}</p>
         </div>
-        <div class="pdf-party-box">
+        <div class="pdf-party">
           <h4>Client</h4>
-          <p><strong>${esc(G('ag-client'))}</strong></p>
-          <p>${esc(G('ag-client-addr'))}</p>
-          <p>${esc(G('ag-client-email'))}</p>
-          <p>${esc(G('ag-client-phone'))}</p>
+          <p><span class="lbl">Full Name / Company:</span> ${esc(G('ag-client'))}</p>
+          <p><span class="lbl">Address:</span> ${esc(G('ag-client-addr'))}</p>
+          <p><span class="lbl">Email:</span> ${esc(G('ag-client-email'))}</p>
+          <p><span class="lbl">Phone:</span> ${esc(G('ag-client-phone'))}</p>
         </div>
       </div>
+      <p class="pdf-body">Together referred to as the "Parties."</p>
 
-      <div class="pdf-section-wrap"><div class="pdf-section-title">2. Project Description</div></div>
-      <p style="font-size:10.5pt;margin-bottom:10px;color:#3a352e">${esc(document.getElementById('ag-desc')?.value||'')}</p>
-      <p style="font-size:10pt;color:#7c7568"><strong style="color:#1d1b17">Project Type:</strong> ${esc(G('ag-proj-type'))}</p>
+      <div class="pdf-h1" style="margin-top:24px">2. Project Scope &amp; Deliverables</div>
+      <div class="pdf-h2">2.1 Project Description</div>
+      <p class="pdf-body">${esc(G('ag-desc'))}</p>
+      ${esc(G('ag-proj-type'))?`<p class="pdf-body"><strong>Project Type:</strong> ${esc(G('ag-proj-type'))}</p>`:''}
+      ${scopeHtml}
+      <div class="pdf-h2">2.${acceptanceNum} Acceptance</div>
+      <p class="pdf-body">Upon delivery, the Client has ${acceptDays} business days to review each deliverable and notify the Designer in writing of any deficiencies. If no written notice is received within this period, the deliverable shall be deemed accepted.</p>
+      <div class="pdf-page-num">${includeToc?'3':'2'}</div>
+    </div>
 
-      ${sectionStates.scope?`
-      <div class="pdf-section-wrap"><div class="pdf-section-title">3. Scope of Work</div></div>
-      <ul class="pdf-scope-list">${scope.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}
-
-      <div class="pdf-section-wrap"><div class="pdf-section-title">${sectionStates.scope?'4':'3'}. Timeline</div></div>
-      <table class="pdf-meta-table">
-        <tr><td>Estimated Start Date</td><td>${formatDateFull(G('ag-start'))}</td></tr>
-        <tr><td>Estimated End Date</td><td>${formatDateFull(G('ag-end'))}</td></tr>
+    <!-- TIMELINE + PAYMENT -->
+    <div class="pdf-page" style="page-break-before:always">
+      <div class="pdf-h1">3. Timeline &amp; Delays</div>
+      <table class="pdf-payment-table">
+        <tr><th style="width:40%">Estimated Start Date</th><td>${formatDateFull(G('ag-start'))}</td></tr>
+        <tr><th>Estimated End Date</th><td>${formatDateFull(G('ag-end'))}</td></tr>
       </table>
-      <p class="pdf-note">These dates are provided in good faith as working estimates. Delays caused by the Client will extend the timeline proportionally.</p>
-    </div></div>
+      <p class="pdf-body">These dates are provided in good faith as working estimates and do not constitute hard contractual deadlines. The Designer's ability to meet the agreed schedule depends on the Client providing timely feedback, approvals, and content as requested.</p>
+      <p class="pdf-body">Any delay caused by the Client — including late feedback, change of direction, or deviation from the agreed process — will extend the delivery timeline proportionally. Such delays do not constitute a breach of this Agreement by the Designer.</p>
 
-    <div class="pdf-page" style="page-break-before:always"><div class="pdf-topbar"></div><div class="pdf-inner">
       ${sectionStates.payment?`
-      <div class="pdf-section-wrap"><div class="pdf-section-title">5. Fees &amp; Payment</div></div>
+      <div class="pdf-h1" style="margin-top:24px">4. Fees, Expenses &amp; Payment Policy</div>
+      <div class="pdf-h2">4.1 Payment Schedule</div>
       <table class="pdf-payment-table">
         <thead><tr><th>Milestone</th><th>Amount</th><th>Due</th></tr></thead>
         <tbody>
-          <tr><td>Advance (non-refundable)</td><td><strong>₹${advAmt.toLocaleString('en-IN')}</strong> (${advPct}%)</td><td>${esc(G('ag-adv-due'))}</td></tr>
-          <tr><td>Final Payment</td><td><strong>₹${finalAmt.toLocaleString('en-IN')}</strong> (${100-advPct}%)</td><td>${esc(G('ag-final-due'))}</td></tr>
-          <tr class="total-row"><td>Total</td><td>₹${fee.toLocaleString('en-IN')}</td><td>—</td></tr>
+          <tr><td>Advance (non-refundable)</td><td>${advPct}% of total (₹${advAmt.toLocaleString('en-IN')})</td><td>${esc(G('ag-adv-due'))}</td></tr>
+          <tr><td>Final Payment</td><td>${100-advPct}% of total (₹${finalAmt.toLocaleString('en-IN')})</td><td>${esc(G('ag-final-due'))}</td></tr>
         </tbody>
       </table>
-      <div class="pdf-bank-box">
-        <h4>Bank Details</h4>
-        <div class="pdf-bank-grid">
-          <div><span>Account Holder</span><strong>NEELAM SHIRISHBHAI GAWANDE</strong></div>
-          <div><span>Account Number</span><strong>50100149087367</strong></div>
-          <div><span>IFSC</span><strong>HDFC0001715</strong></div>
-          <div><span>Branch</span><strong>CHITRA</strong></div>
-          <div><span>Account Type</span><strong>Saving</strong></div>
-          <div><span>UPI ID</span><strong>nilamgawande4@okhdfcbank</strong></div>
-          <div><span>PayPal</span><strong>paypal.me/neelamgawande</strong></div>
-          <div><span>MMID</span><strong>9240131</strong></div>
-        </div>
+      <div class="pdf-callout">No work will begin until the advance payment is received. Final deliverables and source files will not be released until the outstanding balance is paid in full.</div>
+      <div class="pdf-h2">Bank Details</div>
+      <div class="pdf-bank">
+        <span class="lbl">Account Holder:</span> NEELAM SHIRISHBHAI GAWANDE<br>
+        <span class="lbl">Account Number:</span> 50100149087367<br>
+        <span class="lbl">IFSC:</span> HDFC0001715 &nbsp;&nbsp; <span class="lbl">Branch:</span> CHITRA<br>
+        <span class="lbl">Account Type:</span> Saving &nbsp;&nbsp; <span class="lbl">MMID:</span> 9240131<br>
+        <span class="lbl">UPI ID:</span> nilamgawande4@okhdfcbank<br>
+        <span class="lbl">PayPal:</span> paypal.me/neelamgawande
       </div>
-      <p class="pdf-note">Late payments attract ${late}% monthly charge after 14 days. No work begins until advance is received. Final files released only after full payment.</p>`:''}
+      <div class="pdf-h2">4.2 Late Payments</div>
+      <p class="pdf-body">Invoices not settled within 14 days of the due date will attract a monthly service charge of ${late}% (or the maximum permitted by applicable law) on the outstanding balance. The Client shall also be responsible for any reasonable legal or collection costs arising from late or non-payment.</p>
+      <div class="pdf-h2">4.3 Expenses &amp; Taxes</div>
+      <p class="pdf-body">Any pre-approved out-of-pocket expenses incurred on behalf of the Client (e.g., stock imagery, third-party tools) will be invoiced separately with a ${markup}% handling markup. The Client is responsible for all applicable taxes, duties, or levies on the fees paid.</p>`:''}
+      <div class="pdf-page-num">${includeToc?'4':'3'}</div>
+    </div>
 
+    <!-- REVISIONS + TC -->
+    ${(sectionStates.revisions||sectionStates.tc)?`
+    <div class="pdf-page" style="page-break-before:always">
       ${sectionStates.revisions?`
-      <div class="pdf-section-wrap"><div class="pdf-section-title">6. Revisions &amp; Support</div></div>
-      <ul class="pdf-scope-list">
-        <li>Included revisions: <strong>${revRounds} rounds</strong> per deliverable, within agreed scope.</li>
-        <li>Additional revisions billed at ₹${hourly}/hour with prior written agreement.</li>
-        <li>Post-launch support: <strong>${support} days</strong> free bug fixes and technical assistance.</li>
-      </ul>`:''}
+      <div class="pdf-h1">${revNum}. Changes &amp; Revisions</div>
+      <div class="pdf-h2">${revNum}.1 Included Revisions</div>
+      <p class="pdf-body">The project fee includes ${revRounds} rounds of revisions per deliverable, within the agreed scope. Each revision round must be submitted as a consolidated set of feedback — not in piecemeal messages.</p>
+      <div class="pdf-h2">${revNum}.2 Additional Revisions</div>
+      <p class="pdf-body">Revisions beyond the included rounds, or requests that fall outside the original scope, will be billed at the Designer's standard hourly rate of ₹${hourly}/hour, with prior written agreement.</p>
+      <div class="pdf-h2">${revNum}.3 Scope Creep</div>
+      <p class="pdf-body">If the Client requests changes that materially alter the project scope or increase the estimated time by more than ${creep}%, the Designer reserves the right to submit a revised proposal. Work on the expanded scope will not begin until the revised proposal is signed and the corresponding advance is received.</p>
+      <div class="pdf-h2">Warranty &amp; Support</div>
+      <p class="pdf-body">${support} days of free post-launch support will be provided for bug fixes and technical assistance. New feature requests, plugin purchases, or third-party integrations will be billed separately.</p>`:''}
 
       ${sectionStates.tc?`
-      <div class="pdf-section-wrap"><div class="pdf-section-title">7. Terms &amp; Conditions</div></div>
-      <ol class="pdf-tc-list">${tc.map(t=>`<li>${esc(t)}</li>`).join('')}</ol>`:''}
+      <div class="pdf-h1" style="margin-top:24px">${tcNum}. Terms &amp; Conditions</div>
+      <ol class="pdf-numbered">${tc.map(t=>`<li>${esc(t)}</li>`).join('')}</ol>`:''}
 
       <div class="pdf-sig-section">
         <div class="pdf-sig-box">
           <div class="sig-label">Designer</div>
           <img class="pdf-sig-img" src="${SIG_SRC}" alt="Signature">
-          <div class="pdf-sig-line">Neelam Gawande</div>
+          <div class="pdf-sig-line">${esc(G('ag-me-name'))}</div>
           <div class="pdf-sig-sub">Neelam Web Marketing</div>
           <div class="pdf-sig-sub">Date: ${formatDateFull(G('ag-date'))}</div>
         </div>
         <div class="pdf-sig-box">
           <div class="sig-label">Client</div>
-          <div style="height:66px;border-bottom:1.5px solid #ddd;margin-bottom:2px"></div>
+          <div style="height:64px;border-bottom:1px solid #ccc;margin-bottom:2px"></div>
           <div class="pdf-sig-line">${esc(G('ag-client'))}</div>
           <div class="pdf-sig-sub">Date: _______________</div>
         </div>
       </div>
-    </div></div>
-    <div class="pdf-footer-bar">
-      <span>Neelam Web Marketing &middot; hello@neelamwebmarketing.com &middot; +91 8140115340</span>
-      <span>Confidential</span>
-    </div>
+      <div class="pdf-page-num">${includeToc?'5':'4'}</div>
+    </div>`:''}
   </div>`;
 
   openPdfOverlay(html, `Service_Agreement_${(G('ag-client')||'Client').replace(/\s+/g,'_')}`);
