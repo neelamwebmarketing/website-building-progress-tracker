@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#f3efe6;--surface:#fbf9f3;--surface-2:#f7f3ea;--ink:#1d1b17;--muted:#7c7568;
@@ -511,15 +512,48 @@ function switchDocTab(tab){
   document.getElementById('doc-invoice').style.display=tab==='invoice'?'block':'none';
 }
 
+/* ── SUPABASE ── */
+const SUPABASE_URL = 'https://ejdhfsmngneungdezqem.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGhmc21uZ25ldW5nZGV6cWVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDY5NjksImV4cCI6MjA5NTYyMjk2OX0.X3LUq0-n468djjm7mPS-e9pqhLBbg_nIXCv8igS9Y4Q';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 /* ── PROJECT TRACKER ── */
-const PT_KEY='nwm:projects';
 let projects=[];
 let activeYear='all';
 let editingId=null;
 let revenueChart=null,techChart=null;
 
-function ptLoad(){try{const r=localStorage.getItem(PT_KEY);if(r)projects=JSON.parse(r);}catch(e){}renderTracker();}
-function ptSave(){try{localStorage.setItem(PT_KEY,JSON.stringify(projects));}catch(e){}}
+async function ptLoad(){
+  const {data,error}=await sb.from('projects').select('*').order('created_at',{ascending:false});
+  if(error){console.error('Load error:',error);projects=[];}
+  else{
+    projects=data.map(r=>({
+      id:r.id,client:r.client,name:r.name,type:r.type,referral:r.referral,
+      url:r.url,start:r.start_date,tentative:r.tentative_date,end:r.end_date,
+      status:r.status,tech:r.tech,paystatus:r.paystatus,
+      amount:r.amount,advance:r.advance,paydate:r.paydate,notes:r.notes
+    }));
+  }
+  renderTracker();
+  populateImportDropdowns();
+}
+
+async function ptSave(p,isDelete){
+  if(isDelete){
+    const {error}=await sb.from('projects').delete().eq('id',p.id);
+    if(error)console.error('Delete error:',error);
+    return;
+  }
+  const row={
+    id:p.id,client:p.client,name:p.name,type:p.type,referral:p.referral,
+    url:p.url,start_date:p.start||null,tentative_date:p.tentative||null,end_date:p.end||null,
+    status:p.status,tech:p.tech,paystatus:p.paystatus,
+    amount:p.amount||null,advance:p.advance||null,paydate:p.paydate||null,notes:p.notes
+  };
+  const {error}=await sb.from('projects').upsert(row);
+  if(error)console.error('Save error:',error);
+}
+
 function uid2(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function durationDays(s,e){if(!s)return null;return Math.max(0,Math.round((new Date(e||new Date())-new Date(s))/(864e5)));}
 function fmtDuration(d){if(d===null)return'—';if(d<30)return d+'d';const m=Math.round(d/30.4);if(m<12)return m+'mo';const y=Math.floor(m/12),r=m%12;return y+'y'+(r?' '+r+'mo':'');}
@@ -633,7 +667,7 @@ function openModal(id){
   document.getElementById('modal-bg').classList.add('open');
 }
 function closeModal(){document.getElementById('modal-bg').classList.remove('open');editingId=null;}
-function saveProject(){
+async function saveProject(){
   const ps=document.getElementById('f-paystatus').value;
   const p={
     id:editingId||uid2(),client:document.getElementById('f-client').value.trim(),
@@ -648,12 +682,20 @@ function saveProject(){
     notes:document.getElementById('f-notes').value.trim(),
   };
   if(!p.name&&!p.client){alert('Please enter at least a project or client name.');return;}
-  if(editingId){const i=projects.findIndex(x=>x.id===editingId);if(i>-1)projects[i]=p;}
-  else projects.push(p);
-  ptSave();closeModal();renderTracker();populateImportDropdowns();
+  const btn=document.querySelector('.btn-save');
+  btn.textContent='Saving…';btn.disabled=true;
+  await ptSave(p,false);
+  await ptLoad();
+  btn.textContent='Save project';btn.disabled=false;
+  closeModal();
 }
 function editProject(id){openModal(id);}
-function deleteProject(id){if(!confirm('Delete this project?'))return;projects=projects.filter(p=>p.id!==id);ptSave();renderTracker();}
+async function deleteProject(id){
+  if(!confirm('Delete this project?'))return;
+  const p=projects.find(x=>x.id===id);
+  if(p){await ptSave(p,true);}
+  await ptLoad();
+}
 
 /* ── DOCUMENTS ── */
 const DEFAULT_SCOPE = [
@@ -1013,20 +1055,74 @@ const PHASES=[
   ["Post-Launch",[["recheckdesign","Recheck page design on desktop & mobile"],["rechecklinks","Recheck links & buttons on desktop & mobile"],["recheckforms","Recheck forms & SMTP configuration"],["recheckfunc","Recheck other functionality (chatbot, cart, etc.)"],["backup2","Take backup"],["screenshots","Take screenshots of website"],["speedshots","Screenshot load time (GTmetrix & PageSpeed)"],["creds","Document & share login credentials"]]],
 ];
 const TOTAL=PHASES.reduce((n,[,it])=>n+it.length,0);
-const CL_KEY="wbchecklist:data";
 let clState={sites:[],active:null};
-function clLoad(){try{const r=localStorage.getItem(CL_KEY);if(r)clState=JSON.parse(r);}catch(e){}if(!clState.sites)clState.sites=[];clRender();}
-function clSave(){try{localStorage.setItem(CL_KEY,JSON.stringify(clState));clFlash();}catch(e){}}
+let clSaveTimer=null;
+
+async function clLoad(){
+  const {data,error}=await sb.from('checklist_sites').select('*').order('created_at',{ascending:true});
+  if(error){console.error('CL load error:',error);clState={sites:[],active:null};}
+  else{
+    clState.sites=data.map(r=>({id:r.id,name:r.name,checks:r.checks||{},collapsed:r.collapsed||{}}));
+    clState.active=clState.sites.length?clState.sites[0].id:null;
+  }
+  clRender();
+}
+
+async function clSaveSite(site){
+  const {error}=await sb.from('checklist_sites').upsert({
+    id:site.id,name:site.name,checks:site.checks||{},collapsed:site.collapsed||{}
+  });
+  if(error)console.error('CL save error:',error);
+}
+
+async function clDeleteSite(id){
+  const {error}=await sb.from('checklist_sites').delete().eq('id',id);
+  if(error)console.error('CL delete error:',error);
+}
+
 function clFlash(){const el=document.getElementById("savedlbl");if(!el)return;el.style.opacity=1;clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity=.55,1200);}
 function clUid(){return Math.random().toString(36).slice(2,9)}
 function activeSite(){return clState.sites.find(s=>s.id===clState.active)}
 function siteProgress(s){const c=Object.values(s.checks||{}).filter(Boolean).length;return{done:c,pct:TOTAL?Math.round(c/TOTAL*100):0}}
-function addSite(){const n=prompt("Client / website name:");if(!n||!n.trim())return;const s={id:clUid(),name:n.trim(),checks:{},collapsed:{}};clState.sites.push(s);clState.active=s.id;clSave();clRender();}
-function renameSite(){const s=activeSite();if(!s)return;const n=prompt("Rename site:",s.name);if(!n||!n.trim())return;s.name=n.trim();clSave();clRender();}
-function deleteSite(){const s=activeSite();if(!s)return;if(!confirm(`Delete "${s.name}"?`))return;clState.sites=clState.sites.filter(x=>x.id!==s.id);clState.active=clState.sites[0]?clState.sites[0].id:null;clSave();clRender();}
-function resetSite(){const s=activeSite();if(!s)return;if(!confirm(`Uncheck everything for "${s.name}"?`))return;s.checks={};clSave();clRender();}
-function toggle(stepId,row){const s=activeSite();if(!s)return;s.checks[stepId]=!s.checks[stepId];if(s.checks[stepId]){row.classList.add("pop");setTimeout(()=>row.classList.remove("pop"),300);}clSave();clRender(true);}
-function togglePhase(i){const s=activeSite();if(!s)return;s.collapsed=s.collapsed||{};s.collapsed[i]=!s.collapsed[i];clSave();}
+
+async function addSite(){
+  const n=prompt("Client / website name:");if(!n||!n.trim())return;
+  const s={id:clUid(),name:n.trim(),checks:{},collapsed:{}};
+  clState.sites.push(s);clState.active=s.id;
+  await clSaveSite(s);clRender();
+}
+async function renameSite(){
+  const s=activeSite();if(!s)return;
+  const n=prompt("Rename site:",s.name);if(!n||!n.trim())return;
+  s.name=n.trim();await clSaveSite(s);clRender();
+}
+async function deleteSite(){
+  const s=activeSite();if(!s)return;
+  if(!confirm(`Delete "${s.name}"?`))return;
+  await clDeleteSite(s.id);
+  clState.sites=clState.sites.filter(x=>x.id!==s.id);
+  clState.active=clState.sites[0]?clState.sites[0].id:null;
+  clRender();
+}
+async function resetSite(){
+  const s=activeSite();if(!s)return;
+  if(!confirm(`Uncheck everything for "${s.name}"?`))return;
+  s.checks={};await clSaveSite(s);clRender();
+}
+function toggle(stepId,row){
+  const s=activeSite();if(!s)return;
+  s.checks[stepId]=!s.checks[stepId];
+  if(s.checks[stepId]){row.classList.add("pop");setTimeout(()=>row.classList.remove("pop"),300);}
+  clRender(true);clFlash();
+  clearTimeout(clSaveTimer);
+  clSaveTimer=setTimeout(()=>clSaveSite(s),600);
+}
+function togglePhase(i){
+  const s=activeSite();if(!s)return;
+  s.collapsed=s.collapsed||{};s.collapsed[i]=!s.collapsed[i];
+  clearTimeout(clSaveTimer);
+  clSaveTimer=setTimeout(()=>clSaveSite(s),600);
+}
 function clRender(){
   const app=document.getElementById("app");
   if(!clState.sites.length){app.innerHTML=`<div class="empty"><h2>Track a website build</h2><p>Add a client site and tick off each step as you go.</p><button class="btn" onclick="addSite()">+ Add your first site</button></div>`;return;}
@@ -1039,7 +1135,7 @@ function clRender(){
     const rows=items.map(([id,label])=>`<div class="item ${s.checks[id]?'done':''}" onclick="toggle('${id}',this)"><span class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span><span class="txt">${esc(label)}</span></div>`).join("");
     return`<div class="phase ${collapsed?'collapsed':''}"><div class="phase-head" onclick="togglePhase(${i});this.closest('.phase').classList.toggle('collapsed')"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg><span class="name">${name}</span><span class="count ${full?'full':''}">${dc}/${items.length}</span></div><div class="pminibar"><i style="width:${pp}%"></i></div><div class="items">${rows}</div></div>`;
   }).join("");
-  app.innerHTML=`<div class="head"><div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div><div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div></div><div class="sites">${tabs}</div><div class="bar"><i style="width:${pct}%"></i></div>${phases}<div class="toolbar"><span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved automatically</span><span><button class="lnk" onclick="renameSite()">Rename</button> · <button class="lnk" onclick="resetSite()">Reset</button> · <button class="lnk" onclick="deleteSite()">Delete</button></span></div>`;
+  app.innerHTML=`<div class="head"><div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div><div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div></div><div class="sites">${tabs}</div><div class="bar"><i style="width:${pct}%"></i></div>${phases}<div class="toolbar"><span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved to cloud</span><span><button class="lnk" onclick="renameSite()">Rename</button> · <button class="lnk" onclick="resetSite()">Reset</button> · <button class="lnk" onclick="deleteSite()">Delete</button></span></div>`;
 }
 
 ptLoad();
