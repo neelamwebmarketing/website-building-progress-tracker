@@ -276,6 +276,19 @@ body{min-height:100vh}
   <div class="doc-header">
     <div><h1>Documents</h1><p>Generate service agreements and invoices in seconds.</p></div>
   </div>
+
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:600;margin-bottom:12px">Quick generate from project</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <select id="docs-project-select" style="flex:1;min-width:200px;font-family:inherit;font-size:14px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;padding:9px 12px;color:var(--ink);outline:none">
+        <option value="">— Select a project —</option>
+      </select>
+      <button onclick="quickGenAgreement()" style="font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap">📄 Agreement</button>
+      <button onclick="quickGenInvoice('advance')" style="font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap">🧾 Advance Invoice</button>
+      <button onclick="quickGenInvoice('final')" style="font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap">🧾 Final Invoice</button>
+    </div>
+  </div>
+
   <div class="doc-tabs">
     <button class="doc-tab active" onclick="switchDocTab('agreement')">Service Agreement</button>
     <button class="doc-tab" onclick="switchDocTab('invoice')">Invoice</button>
@@ -536,6 +549,7 @@ async function ptLoad(){
   }
   renderTracker();
   populateImportDropdowns();
+  renderProjectSelectInDocs();
 }
 
 async function ptSave(p,isDelete){
@@ -688,6 +702,8 @@ async function saveProject(){
   await ptLoad();
   btn.textContent='Save project';btn.disabled=false;
   closeModal();
+  populateImportDropdowns();
+  renderProjectSelectInDocs();
 }
 function editProject(id){openModal(id);}
 async function deleteProject(id){
@@ -695,6 +711,8 @@ async function deleteProject(id){
   const p=projects.find(x=>x.id===id);
   if(p){await ptSave(p,true);}
   await ptLoad();
+  populateImportDropdowns();
+  renderProjectSelectInDocs();
 }
 
 /* ── DOCUMENTS ── */
@@ -794,8 +812,18 @@ function getInvItems(){
 
 function populateImportDropdowns(){
   const opts=projects.map(p=>`<option value="${p.id}">${esc(p.client?p.client+' – ':'')}${esc(p.name||'Unnamed')}</option>`).join('');
-  document.getElementById('ag-import').innerHTML='<option value="">— Select project to auto-fill —</option>'+opts;
-  document.getElementById('inv-import').innerHTML='<option value="">— Select project to auto-fill —</option>'+opts;
+  const blank='<option value="">— Select project to auto-fill —</option>';
+  const ag=document.getElementById('ag-import');
+  const inv=document.getElementById('inv-import');
+  if(ag) ag.innerHTML=blank+opts;
+  if(inv) inv.innerHTML=blank+opts;
+}
+
+function renderProjectSelectInDocs(){
+  const el=document.getElementById('docs-project-select');
+  if(!el) return;
+  const opts=projects.map(p=>`<option value="${p.id}">${esc(p.client?p.client+' — ':'')}${esc(p.name||'Unnamed')} ${p.status==='active'?'🟡':'✅'}</option>`).join('');
+  el.innerHTML='<option value="">— Select a project —</option>'+opts;
 }
 
 function importFromProject(mode){
@@ -831,6 +859,31 @@ function prefillDocFromProject(id){
   setTimeout(()=>{
     document.getElementById('ag-import').value=id;
     importFromProject('ag');
+  },100);
+}
+
+/* ── QUICK GENERATE ── */
+function quickGenAgreement(){
+  const id=document.getElementById('docs-project-select').value;
+  if(!id){alert('Please select a project first.');return;}
+  switchDocTab('agreement');
+  setTimeout(()=>{
+    document.getElementById('ag-import').value=id;
+    importFromProject('ag');
+    setTimeout(()=>generateAgreement(),200);
+  },100);
+}
+function quickGenInvoice(milestone){
+  const id=document.getElementById('docs-project-select').value;
+  if(!id){alert('Please select a project first.');return;}
+  switchDocTab('invoice');
+  setTimeout(()=>{
+    document.getElementById('inv-import').value=id;
+    document.getElementById('inv-milestone').value=milestone;
+    importFromProject('inv');
+    const today=new Date().toISOString().split('T')[0];
+    document.getElementById('inv-date').value=today;
+    setTimeout(()=>generateInvoice(),200);
   },100);
 }
 
