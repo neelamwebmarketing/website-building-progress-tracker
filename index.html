@@ -253,6 +253,7 @@ body{min-height:100vh}
 
 <!-- PROJECT TRACKER -->
 <div class="page active" id="page-tracker">
+  <div id="db-status" style="display:none;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px;"></div>
   <div class="pt-header">
     <div><h1>Project Tracker</h1><p>All your client projects, revenue, and timelines in one place.</p></div>
     <button class="pt-add-btn" onclick="openModal()">+ Add Project</button>
@@ -535,8 +536,47 @@ function switchDocTab(tab){
 
 /* ── SUPABASE ── */
 const SUPABASE_URL = 'https://ejdhfsmngneungdezqem.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGhmc21uZ25ldW5nZGV6cWVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNDY5NjksImV4cCI6MjA5NTYyMjk2OX0.X3LUq0-n468djjm7mPS-e9pqhLBbg_nIXCv8igS9Y4Q';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY = 'sb_publishable_k_9mLR9q1QbBjwIqgsp92Q_69PAK3ER';
+
+let sb;
+try {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  console.log('✅ Supabase client created');
+} catch(e) {
+  console.error('❌ Supabase init failed:', e);
+}
+
+async function testConnection() {
+  try {
+    const {data, error} = await sb.from('projects').select('count', {count:'exact',head:true});
+    if(error) {
+      console.error('❌ DB connection error - code:', error.code);
+      console.error('❌ DB connection error - message:', error.message);
+      console.error('❌ DB connection error - details:', error.details);
+      console.error('❌ DB connection error - hint:', error.hint);
+      console.error('❌ Full error object:', JSON.stringify(error));
+      showDbStatus('❌ Database error: ' + error.message + ' (code: ' + error.code + ')', 'error');
+    } else {
+      console.log('✅ DB connected successfully');
+      showDbStatus('✅ Connected to database', 'ok');
+    }
+  } catch(e) {
+    console.error('❌ Connection test failed:', e.message);
+    showDbStatus('❌ Cannot reach database: ' + e.message, 'error');
+  }
+}
+
+function showDbStatus(msg, type) {
+  const el = document.getElementById('db-status');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'ok' ? 'var(--done-soft)' : '#fee2e2';
+  el.style.color = type === 'ok' ? '#356046' : '#991b1b';
+  if(type === 'ok') setTimeout(() => el.style.display='none', 3000);
+}
 
 /* ── PROJECT TRACKER ── */
 let projects=[];
@@ -546,7 +586,12 @@ let revenueChart=null,techChart=null;
 
 async function ptLoad(){
   const {data,error}=await sb.from('projects').select('*').order('created_at',{ascending:false});
-  if(error){console.error('Load error:',error);projects=[];}
+  if(error){
+    console.error('Load error code:', error.code);
+    console.error('Load error message:', error.message);
+    console.error('Load error full:', JSON.stringify(error));
+    projects=[];
+  }
   else{
     projects=data.map(r=>({
       id:r.id,client:r.client,name:r.name,type:r.type,referral:r.referral,
@@ -562,19 +607,27 @@ async function ptLoad(){
 }
 
 async function ptSave(p,isDelete){
+  if(!sb){ showDbStatus('❌ Database not connected','error'); return; }
   if(isDelete){
     const {error}=await sb.from('projects').delete().eq('id',p.id);
-    if(error)console.error('Delete error:',error);
+    if(error){ console.error('Delete error:',error); showDbStatus('❌ Delete failed: '+error.message,'error'); }
     return;
   }
   const row={
-    id:p.id,client:p.client,name:p.name,type:p.type,referral:p.referral,
-    url:p.url,start_date:p.start||null,tentative_date:p.tentative||null,end_date:p.end||null,
-    status:p.status,tech:p.tech,paystatus:p.paystatus,
-    amount:p.amount||null,advance:p.advance||null,paydate:p.paydate||null,notes:p.notes
+    id:p.id,client:p.client||null,name:p.name||null,type:p.type||null,referral:p.referral||null,
+    url:p.url||null,start_date:p.start||null,tentative_date:p.tentative||null,end_date:p.end||null,
+    status:p.status||'active',tech:p.tech||null,paystatus:p.paystatus||'unpaid',
+    amount:p.amount||null,advance:p.advance||null,paydate:p.paydate||null,notes:p.notes||null
   };
-  const {error}=await sb.from('projects').upsert(row);
-  if(error)console.error('Save error:',error);
+  console.log('Saving row:', row);
+  const {data,error}=await sb.from('projects').upsert(row).select();
+  if(error){
+    console.error('Save error:',error);
+    showDbStatus('❌ Save failed: '+error.message,'error');
+  } else {
+    console.log('✅ Saved:', data);
+    showDbStatus('✅ Project saved!','ok');
+  }
 }
 
 function uid2(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -1155,7 +1208,12 @@ let clSaveTimer=null;
 
 async function clLoad(){
   const {data,error}=await sb.from('checklist_sites').select('*').order('created_at',{ascending:true});
-  if(error){console.error('CL load error:',error);clState={sites:[],active:null};}
+  if(error){
+    console.error('CL load error code:', error.code);
+    console.error('CL load error message:', error.message);
+    console.error('CL load full:', JSON.stringify(error));
+    clState={sites:[],active:null};
+  }
   else{
     clState.sites=data.map(r=>({id:r.id,name:r.name,checks:r.checks||{},collapsed:r.collapsed||{}}));
     clState.active=clState.sites.length?clState.sites[0].id:null;
@@ -1233,6 +1291,7 @@ function clRender(){
   app.innerHTML=`<div class="head"><div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div><div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div></div><div class="sites">${tabs}</div><div class="bar"><i style="width:${pct}%"></i></div>${phases}<div class="toolbar"><span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved to cloud</span><span><button class="lnk" onclick="renameSite()">Rename</button> · <button class="lnk" onclick="resetSite()">Reset</button> · <button class="lnk" onclick="deleteSite()">Delete</button></span></div>`;
 }
 
+testConnection();
 ptLoad();
 clLoad();
 initDocBuilder();
