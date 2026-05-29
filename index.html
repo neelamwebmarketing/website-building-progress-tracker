@@ -262,6 +262,14 @@ body{min-height:100vh}
     <div class="chart-card"><h3>Revenue by year</h3><div class="chart-wrap"><canvas id="chartRevenue" role="img" aria-label="Revenue by year"></canvas></div></div>
     <div class="chart-card"><h3>Projects by technology</h3><div class="chart-wrap"><canvas id="chartTech" role="img" aria-label="Tech breakdown"></canvas></div></div>
   </div>
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:24px;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)">
+      <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600">Recent projects</div>
+      <div style="font-size:12px;color:var(--muted)">Most recently added · <button class="lnk" onclick="document.getElementById('year-row').scrollIntoView({behavior:'smooth'})">See all ↓</button></div>
+    </div>
+    <div id="recent-projects-panel"></div>
+  </div>
+
   <div class="year-row" id="year-row"></div>
   <div id="proj-list"></div>
 </div>
@@ -517,7 +525,7 @@ function switchTab(tab){
     document.getElementById('page-'+p).classList.toggle('active',p===tab);
   });
   if(tab==='tracker') renderTracker();
-  if(tab==='documents') populateImportDropdowns();
+  if(tab==='documents'){ populateImportDropdowns(); renderProjectSelectInDocs(); }
 }
 function switchDocTab(tab){
   document.querySelectorAll('.doc-tab').forEach((t,i)=>t.classList.toggle('active',['agreement','invoice'][i]===tab));
@@ -550,6 +558,7 @@ async function ptLoad(){
   renderTracker();
   populateImportDropdowns();
   renderProjectSelectInDocs();
+  renderRecentProjects();
 }
 
 async function ptSave(p,isDelete){
@@ -704,6 +713,7 @@ async function saveProject(){
   closeModal();
   populateImportDropdowns();
   renderProjectSelectInDocs();
+  renderRecentProjects();
 }
 function editProject(id){openModal(id);}
 async function deleteProject(id){
@@ -713,6 +723,7 @@ async function deleteProject(id){
   await ptLoad();
   populateImportDropdowns();
   renderProjectSelectInDocs();
+  renderRecentProjects();
 }
 
 /* ── DOCUMENTS ── */
@@ -824,6 +835,37 @@ function renderProjectSelectInDocs(){
   if(!el) return;
   const opts=projects.map(p=>`<option value="${p.id}">${esc(p.client?p.client+' — ':'')}${esc(p.name||'Unnamed')} ${p.status==='active'?'🟡':'✅'}</option>`).join('');
   el.innerHTML='<option value="">— Select a project —</option>'+opts;
+}
+
+function renderRecentProjects(){
+  const el=document.getElementById('recent-projects-panel');
+  if(!el) return;
+  if(!projects.length){
+    el.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-size:14px">No projects yet — add your first one above!</div>`;
+    return;
+  }
+  const recent=projects.slice(0,5);
+  el.innerHTML=recent.map(p=>{
+    const amt=Number(p.amount)||0;
+    const adv=Number(p.advance)||0;
+    const outstanding=p.paystatus==='partial'?amt-adv:p.paystatus==='unpaid'?amt:0;
+    const payColor=p.paystatus==='paid'?'var(--done)':p.paystatus==='partial'?'#92400e':'#991b1b';
+    const payLabel=p.paystatus==='paid'?'Paid':p.paystatus==='partial'?'Partial':'Unpaid';
+    const statusColor=p.status==='active'?'#92400e':'var(--done)';
+    return`<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);transition:background .12s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name||'Unnamed')} ${p.client?'<span style="font-weight:400;color:var(--muted)">· '+esc(p.client)+'</span>':''}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(p.type||'—')} ${p.start?'· Started '+fmtDate(p.start):''}</div>
+      </div>
+      <div style="text-align:right;white-space:nowrap">
+        <div style="font-weight:600;font-size:14px">${fmtMoney(p.amount)}</div>
+        <div style="font-size:11px;font-weight:600;color:${payColor}">${payLabel}${outstanding>0?' · Due '+fmtMoney(outstanding):''}</div>
+      </div>
+      <span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:${p.status==='active'?'#fef3c7':'var(--done-soft)'};color:${statusColor};white-space:nowrap">${p.status==='active'?'Active':'Done'}</span>
+      <button class="act-btn" onclick="editProject('${p.id}')" style="white-space:nowrap">Edit</button>
+      <button class="act-btn doc" onclick="prefillDocFromProject('${p.id}')" style="white-space:nowrap">Docs</button>
+    </div>`;
+  }).join('');
 }
 
 function importFromProject(mode){
