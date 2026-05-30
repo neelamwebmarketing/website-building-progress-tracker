@@ -207,6 +207,11 @@ body{min-height:100vh}
 .pdf-toc-row .toc-sub{padding-left:18px}
 .pdf-toc-row .toc-page{white-space:nowrap;color:#555}
 .pdf-two-col-parties{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:14px 0 8px}
+.pdf-parties-table{width:100%;border-collapse:collapse;margin:14px 0 18px}
+.pdf-parties-table th{border:1px solid #dddddd;background:#f5f5f5;padding:10px 14px;text-align:left;font-size:13px;font-weight:700;color:#555555}
+.pdf-parties-table th:first-child{width:24%}
+.pdf-parties-table td{border:1px solid #dddddd;padding:10px 14px;font-size:13px;color:#222222;vertical-align:top}
+.pdf-parties-table td.pt-lbl{font-weight:700;color:#555555;background:#fafafa}
 .pdf-party h4{font-size:13px;font-weight:700;margin-bottom:8px;color:#555555}
 .pdf-party p{font-size:13px;margin:3px 0;line-height:1.55;color:#333}
 .pdf-party p .lbl{font-weight:600;color:#111111}
@@ -1106,22 +1111,15 @@ function generateAgreement(){
     <div class="pdf-page" style="page-break-before:always">
       <div class="pdf-h1">1. Parties &amp; Effective Date</div>
       <p class="pdf-body">This Freelance Services Agreement ("Agreement") is entered into as of ${formatDateFull(G('ag-date'))}, between:</p>
-      <div class="pdf-two-col-parties">
-        <div class="pdf-party">
-          <h4>Contractor</h4>
-          <p><span class="lbl">Full Name:</span> ${esc(G('ag-me-name'))}</p>
-          <p><span class="lbl">Address:</span> ${esc(G('ag-me-addr'))}</p>
-          <p><span class="lbl">Email:</span> ${esc(G('ag-me-email'))}</p>
-          <p><span class="lbl">Phone:</span> ${esc(G('ag-me-phone'))}</p>
-        </div>
-        <div class="pdf-party">
-          <h4>Client</h4>
-          <p><span class="lbl">Full Name / Company:</span> ${esc(G('ag-client'))}</p>
-          <p><span class="lbl">Address:</span> ${esc(G('ag-client-addr'))}</p>
-          <p><span class="lbl">Email:</span> ${esc(G('ag-client-email'))}</p>
-          <p><span class="lbl">Phone:</span> ${esc(G('ag-client-phone'))}</p>
-        </div>
-      </div>
+      <table class="pdf-parties-table">
+        <thead><tr><th></th><th>Contractor</th><th>Client</th></tr></thead>
+        <tbody>
+          <tr><td class="pt-lbl">Full Name / Company</td><td>${esc(G('ag-me-name'))}</td><td>${esc(G('ag-client'))}</td></tr>
+          <tr><td class="pt-lbl">Address</td><td>${esc(G('ag-me-addr'))}</td><td>${esc(G('ag-client-addr'))}</td></tr>
+          <tr><td class="pt-lbl">Email</td><td>${esc(G('ag-me-email'))}</td><td>${esc(G('ag-client-email'))}</td></tr>
+          <tr><td class="pt-lbl">Phone</td><td>${esc(G('ag-me-phone'))}</td><td>${esc(G('ag-client-phone'))}</td></tr>
+        </tbody>
+      </table>
       <p class="pdf-body">Together referred to as the "Parties."</p>
 
       <div class="pdf-h1" style="margin-top:24px">2. Project Scope &amp; Deliverables</div>
