@@ -10,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <style>
 :root{
@@ -1073,9 +1073,31 @@ function quickGenInvoice(milestone){
 }
 
 /* ── GENERATE DOCX (Google Docs / Word quality) ── */
+function getDocxLib(){
+  // The UMD build may expose itself under different names
+  if(typeof docx!=='undefined') return docx;
+  if(typeof window.docx!=='undefined') return window.docx;
+  if(typeof self!=='undefined' && self.docx) return self.docx;
+  return null;
+}
+function getSaveAs(){
+  if(typeof saveAs!=='undefined') return saveAs;
+  if(typeof window.saveAs!=='undefined') return window.saveAs;
+  return null;
+}
+function checkDocxReady(){
+  const D=getDocxLib();
+  const S=getSaveAs();
+  if(!D){ alert('The document library hasn\'t loaded yet. Please wait a moment and try again, or check your internet connection.'); console.error('docx library not found on window'); return false; }
+  if(!S){ alert('The file-saver library hasn\'t loaded. Please refresh and try again.'); console.error('saveAs not found'); return false; }
+  return true;
+}
+
 function genAgreementDocx(){
+  if(!checkDocxReady()) return;
   const G=id=>document.getElementById(id)?.value||'';
-  const D=docx;
+  const D=getDocxLib();
+  const saveAs=getSaveAs();
   const fee=Number(G('ag-fee'))||0;
   const advPct=Number(G('ag-adv-pct'))||50;
   const advAmt=Math.round(fee*advPct/100);
@@ -1398,8 +1420,10 @@ function generateAgreement(){
 
 /* ── GENERATE INVOICE DOCX ── */
 function genInvoiceDocx(){
+  if(!checkDocxReady()) return;
   const G=id=>document.getElementById(id)?.value||'';
-  const D=docx;
+  const D=getDocxLib();
+  const saveAs=getSaveAs();
   const items=getInvItems();
   const total=items.reduce((s,i)=>s+i.amount,0);
   const ms=G('inv-milestone');
@@ -1670,6 +1694,13 @@ function clRender(){
   }).join("");
   app.innerHTML=`<div class="head"><div class="title"><h1>Website Build</h1><p>Your standard process, tracked step by step.</p></div><div class="overall"><div class="pct">${pct}%</div><div class="lbl">${done} of ${TOTAL} done</div></div></div><div class="sites">${tabs}</div><div class="bar"><i style="width:${pct}%"></i></div>${phases}<div class="toolbar"><span class="saved" id="savedlbl" style="opacity:.55"><span class="dot"></span>Saved to cloud</span><span><button class="lnk" onclick="renameSite()">Rename</button> · <button class="lnk" onclick="resetSite()">Reset</button> · <button class="lnk" onclick="deleteSite()">Delete</button></span></div>`;
 }
+
+// Library load check
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    console.log('Library status — docx:', (getDocxLib()?'✅ loaded':'❌ MISSING'), '| FileSaver:', (getSaveAs()?'✅ loaded':'❌ MISSING'));
+  },500);
+});
 
 testConnection();
 ptLoad();
